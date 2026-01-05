@@ -1,0 +1,25 @@
+format: jb-book
+root: intro
+
+parts:
+  - caption: Course Information
+    chapters:
+      - file: course-info
+      - file: references
+
+  - caption: Part A — Foundations (Build from Scratch)
+    chapters:
+      - file: partA/01_vectors_frames
+      - file: partA/01_lab_vectors
+      - file: partA/02_bezier_curves
+      - file: partA/02_lab_bezier
+      - file: partA/03_bspline_curves
+      - file: partA/03_lab_bspline
+
+  - caption: Part B — Engineering Workflows (Using Tools)
+    chapters:
+      - file: partB/07_fitting
+      - file: partB/07_lab_fitting_geomdl
+      - file: partB/08_pointclouds
+      - file: partB/08_lab_pointclouds
+      - file: partB/10_projects
