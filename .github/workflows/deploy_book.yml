@@ -31,10 +31,17 @@ jobs:
       - name: Build site
         run: myst build --html
 
+      - name: Debug build output
+        run: |
+          echo "=== FIND index.html ==="
+          find _build -name index.html -maxdepth 3
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _build/site
+          path: _build/html
+
+
 
   deploy:
     needs: build
