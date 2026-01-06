@@ -35,7 +35,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install altair vega_datasets pandas numpy
+          pip install mystmd jupyterlab_myst altair vega_datasets pandas numpy
 
       - name: Install Myst
         run: npm install -g mystmd
