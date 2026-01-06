@@ -107,10 +107,10 @@ z=u
 :class: grid grid-cols-2 items-end gap-4 
 
 (Helix3D)=
-![Helix in 3D Space](/imgs/3D_Curve_Helix.png)
+![Helix in 3D Space](./imgs/3D_Curve_Helix.png)
 
 (HelixPar)=
-![Helix in Parameters Space](/imgs/3D_Curve_Helix_Parameter_Space.png)
+![Helix in Parameters Space](./imgs/3D_Curve_Helix_Parameter_Space.png)
 
 Helix in the 3D and Parametric Space
 :::
