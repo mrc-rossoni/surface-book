@@ -29,7 +29,7 @@ jobs:
         run: npm install -g mystmd
 
       - name: Build site
-        run: myst build --html
+        run: BASE_URL=/surface-book myst build --html
 
       - name: Debug build output
         run: |
