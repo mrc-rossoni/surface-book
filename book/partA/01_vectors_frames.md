@@ -13,13 +13,17 @@ By the end of this chapter you will be able to:
 Engineering geometry is built on **coordinate frames**, **transformations**, and **parametric mappings**.
 
 A curve is a function:
-\[
+
+```{math}
+:label:my-fig
 C: [a,b] \rightarrow \mathbb{R}^d
-\]
-A surface is a function:
-\[
+```
+
+Reference to equation [](#my-fig). A surface is a function:
+
+$$
 S: D \subset \mathbb{R}^2 \rightarrow \mathbb{R}^3
-\]
+$$
 
 In both cases, we are mapping a parameter space into physical space.
 
@@ -31,10 +35,12 @@ In geometric modeling, points and vectors play different roles:
 - A **point** represents a location in space.
 - A **vector** represents a displacement.
 
-Affine combinations are crucial. Given points \(P_0, P_1\),
-\[
+Affine combinations are crucial. Given points $P_0, P_1$,
+
+$$
 P(u) = (1-u)P_0 + uP_1
-\]
+$$
+
 is a **linear interpolation**. This is the basic operation behind:
 - Bézier curves (De Casteljau)
 - B-splines (recursive blending)
@@ -43,13 +49,15 @@ is a **linear interpolation**. This is the basic operation behind:
 ---
 
 ## 3. Coordinate frames and transformations
-A coordinate frame consists of an origin \(O\) and basis vectors \(\{e_1, e_2, e_3\}\).
+A coordinate frame consists of an origin $O$ and basis vectors $\{e_1, e_2, e_3\}$.
 
 A rigid transformation is:
-\[
+
+$$
 x' = R x + t
-\]
-where \(R\) is a rotation matrix and \(t\) is a translation vector.
+$$
+
+where $R$ is a rotation matrix and $t$ is a translation vector.
 
 Engineering note: transformations appear everywhere in CAD interoperability
 (STEP/IGES), assembly modeling, and simulation pipelines.
@@ -59,9 +67,9 @@ Engineering note: transformations appear everywhere in CAD interoperability
 ## 4. Parametric viewpoint
 A parametric representation is a mapping:
 
-\[
+$$
 (u, v) \mapsto S(u,v)
-\]
+$$
 
 This viewpoint is essential because:
 - derivatives w.r.t. parameters give tangent directions

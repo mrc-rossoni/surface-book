@@ -6,6 +6,11 @@ project:
   description: Master-level course book with theory + runnable labs (Colab-ready).
   authors:
     - name: Marco Rossoni
+      affiliation: Politecnico di Milano
+      department: Mechanical Engineering
+      email: marco.rossoni@polimi.it
+      orcid: XXXX-XXXX-XXXX-XXXX
+      
   copyright: "2026"
   github: https://github.com/mrc-rossoni/surface-book
 
@@ -19,12 +24,18 @@ project:
 
   - title: Part A — Foundations (Build from Scratch)
     children:
+      - file: book/partA/01_parametric_curves.md
+        name: Parametric Curves
       - file: book/partA/01_vectors_frames
-      - file: book/partA/01_lab_vectors
+        children:
+          - file: book/partA/01_lab_vectors
       - file: book/partA/02_bezier_curves
+        children:
+         - file: book/partA/interactive_chart.ipynb
       - file: book/partA/02_lab_bezier
       - file: book/partA/03_bspline_curves
       - file: book/partA/03_lab_bspline
+      - file: book/partA/01_Bézier_Geometric_Int.ipynb
 
   - title: Part B — Engineering Workflows (Using Tools)
     children:
@@ -33,6 +44,12 @@ project:
       - file: book/partB/08_pointclouds
       - file: book/partB/08_lab_pointclouds
       - file: book/partB/10_projects
+
+  math:
+    renderer: mathjax
+  kernelspec:
+    name: python3
+    display_name: 'Python 3'
 
 site:
   template: book-theme
