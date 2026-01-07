@@ -7,49 +7,50 @@ project:
   authors:
     - name: Marco Rossoni
       affiliation: Politecnico di Milano
-      department: Mechanical Engineering
       email: marco.rossoni@polimi.it
-      orcid: XXXX-XXXX-XXXX-XXXX
+      orcid: 0000-0003-2714-9043
       
   copyright: "2026"
   github: https://github.com/mrc-rossoni/surface-book
 
   # MyST uses toc.yml for navigation
   toc:
-  - file: book/intro
+  - file: book/intro.md
   - title: Course Information
     children:
-      - file: book/course-info
-      - file: book/references
+      - file: book/course-info.md
+      - file: book/references.md
+  #- title: Part 0 - Fundamentals
+  #  hidden: true
+  #  children:
+  #    - file: book/partA/01_vectors_frames.md
+  #      hidden: true
+  #      children:
+  #        - file: book/partA/01_lab_vectors.ipynb
+  #          hidden: true
 
   - title: Part A — Foundations (Build from Scratch)
+    hidden: true
     children:
       - file: book/partA/01_parametric_curves.md
-        name: Parametric Curves
-      - file: book/partA/01_vectors_frames
+      - file: book/partA/02_bezier_curves.md
         children:
-          - file: book/partA/01_lab_vectors
-      - file: book/partA/02_bezier_curves
+         - file: book/partA/02_lab_bezier.ipynb
+         - file: book/partA/01_Bézier_Geometric_Int.ipynb
+      - file: book/partA/03_bspline_curves.md
         children:
-         - file: book/partA/interactive_chart.ipynb
-      - file: book/partA/02_lab_bezier
-      - file: book/partA/03_bspline_curves
-      - file: book/partA/03_lab_bspline
-      - file: book/partA/01_Bézier_Geometric_Int.ipynb
+         - file: book/partA/03_lab_bspline.ipynb      
 
   - title: Part B — Engineering Workflows (Using Tools)
     children:
-      - file: book/partB/07_fitting
-      - file: book/partB/07_lab_fitting_geomdl
-      - file: book/partB/08_pointclouds
-      - file: book/partB/08_lab_pointclouds
-      - file: book/partB/10_projects
+      - file: book/partB/07_fitting.md
+      - file: book/partB/07_lab_fitting_geomdl.ipynb
+      - file: book/partB/08_pointclouds.md
+      - file: book/partB/08_lab_pointclouds.ipynb
+      - file: book/partB/10_projects.md
 
   math:
     renderer: mathjax
-  kernelspec:
-    name: python3
-    display_name: 'Python 3'
 
 site:
   template: book-theme

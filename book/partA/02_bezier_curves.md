@@ -42,10 +42,70 @@ As we discussed in the last part of the Chapter (REF to CH), all the matter of C
 As per the Bézier curves, this functional space is the one defined by the so called "Bernstein basis". We'll dive into it in one of the following chapter. As a matter of fact, from an engineering perspective, the "geometrical interpretaion" should, in my opinion, have the priority. 
 
 
-## Geometric Interpretation 
+## Geometric Interpretation: the "de Casteljau's" Algorithm
 
-Let's start with a simple and intuitive explanation. Given two points ($P_0,P_1$) in the 2D space, what's the simplest way for connecting them you can think of? The answer is trivial: a straight line!
-We can then blend between these two points, to find any point in between. The input to this function is a value ranging from 0 to 1. This value determines how far we want to go from the first point to the second. This is the most common type of blending function, known as **Linear Interpolation**.
+Let’s start with a simple and intuitive idea. Given two points in the 2D plane, {math}`P_0` and {math}`P_1`, what is the simplest way to connect them? The answer is trivial: a straight line.
+
+Once the segment is defined, we can describe _any point along it_ by smoothly moving from {math}`P_0` to {math}`P_1`. To do so, we introduce a parameter {math}`t \in [0,1]`. The intermediate point {math}`P(t)` is defined as:
+
+```{math}
+P(t) = (1-t)\,P_0 + t\,P_1
+```
+This operation is called **linear interpolation**, and it is the simplest blending function in geometry processing and CAD. The parameter {math}`t` controls how far we move from {math}`P_0` to {math}`P_1`: when {math}`t=0` we obtain {math}`P_0`, when {math}`t=1` we obtain {math}`P_1`, and for intermediate values {math}`P(t)` lies between them.
+
+Now, let’s add a third point. We can interpolate between the second point from before ({math}`P_1`) and the new point ({math}`P_2`), again using linear interpolation. The same idea applies if we keep adding points: at each step we interpolate between consecutive points and generate a new set of intermediate points.So we can generalize the idea by making use of recursion. Let:
+- {math}`n` be the degree of the curve;
+- {math}`N_p = n+1` be the number of points;
+- {math}`r` be the recursion level (depth), with {math}`r = 0,1,\dots,n`;
+- {math}`t \in [0,1]` be the interpolation parameter.
+- {math}`P_i^{(r)}(t)` be the *i-th* intermediate point at recursion level *r* for the parameter value *t*.
+
+The algorithm starts from the set of control points:
+
+```{math}
+\{P_0^{(0)}, P_1^{(0)}, \dots, P_n^{(0)}\}
+```
+At each recursion level, we linearly interpolate consecutive points to form a new (smaller) set:
+
+```{math}
+P_i^{(r)}(t) = (1-t)\,P_i^{(r-1)}(t) + t\,P_{i+1}^{(r-1)}(t)
+\quad \text{for } i = 0,\dots,n-r
+```
+
+Algorithmically:
+
+1. Initialize the {math}`N_p = n+1` control points {math}`P_0, P_1, \dots, P_n` and choose a value {math}`t \in [0,1]`.
+2. at level {math}`r = 1`, linearly interpolate between consecutive points and compute {math}`N_p - 1` new points:
+   {math}`P_0^{(1)}(t), \dots, P_{n-1}^{(1)}(t)`.
+3. Increase the recursion level {math}`r \leftarrow r+1` and repeat the same interpolation step on the newly generated points.
+4. Continue until {math}`r = n`, where only one point remains:
+
+```{math}
+P(t) = P_0^{(n)}(t)
+```
+
+Repeating the procedure for many values of {math}`t` generates a whole curve. The final point of each recursion {math}`P(t)` lies on a curve, the so called **Bézier curve**. The agorithm just described is the **de Casteljau’s Algorithm**
+
+
+The point {math}`P(t)` is the result of the recursion for a given value of {math}`t`, and it lies on the so called **Bézier curve**, defined by the control points (`P_0, P_1, \dots, P_n`).
+By repeating the procedure for many values of {math}`t`, we obtain the entire **Bézier curve**. The recursive construction described above is known as **de Casteljau’s algorithm**.
+
+Paul de Casteljau developed the algorithm at Citroën as a recursive method for evaluating Bézier curves. The method provides an intuitive geometric construction, where the curve is defined by successive (linear) interpolations between control points. Unlike polynomial-based approaches, De Casteljau's algorithm relies solely on linear interpolation, making it numerically stable and robust.
+
+```{prf:algorithm} de Casteljau’s algorithm
+Given a set of control points {math}`P_0, P_1, \dots, P_n \in \mathbb{E}^d` and a parameter {math}`t \in [0,1]`, define the recursion:
+
+- Initialization: {math}`P_i^{(0)}(t) = P_i, \qquad i = 0,\dots,n`
+- Recursion for {math}`r = 1,\dots,n` and {math}`i = 0,\dots,n-r`:
+
+   $$
+   P_i^{(r)}(t) = (1 - t)\,P_i^{(r-1)}(t) + t\,P_{i+1}^{(r-1)}(t)
+   $$
+
+The point {math}`P_0^{(n)}(t)` is the point corresponding to the parameter value {math}`t` on the Bézier curve of degree {math}`n`.
+```
+
+By using the slider at the bottom of the following figure you can have a visual demonstration of the de Casteljau’s algorithm for a Bézier curve with 4 control points, hence degree 3 (cubic).
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -120,7 +180,7 @@ def build_casteljau_dataframe(control_points, u):
                 "i": i,
                 "x": p[0],
                 "y": p[1],
-                "label": f"P^{r}_{i}"
+                "label": f"P^{i}_{r}"
             })
 
     # Segments within each level (visualize the "control polygon" at that level)
@@ -159,7 +219,7 @@ df_curve = pd.DataFrame({"u": u_curve, "x": curve_pts[:, 0], "y": curve_pts[:, 1
 # ------------------------------------------------------------
 # Parameter slider for u
 # ------------------------------------------------------------
-u_slider = alt.binding_range(min=0, max=1, step=0.01, name="u:")
+u_slider = alt.binding_range(min=0, max=1, step=0.01, name="t: ")
 u_param = alt.param(value=0.35, bind=u_slider)
 
 # Precompute De Casteljau geometry for a grid of u values (so Vega can filter)
@@ -183,10 +243,21 @@ curve_data = alt.Data(values=df_curve.to_dict(orient="records"))
 x_domain = [-0.1, 1.1]
 y_domain = [-0.1, 1.1]
 
-bezier_curve = alt.Chart(curve_data).mark_line().encode(
+curve_before = alt.Chart(curve_data).mark_line().encode(
     x=alt.X("x:Q", title="x", scale=alt.Scale(domain=x_domain)),
     y=alt.Y("y:Q", title="y", scale=alt.Scale(domain=y_domain)),
-).properties(height=420)
+).transform_filter(
+    alt.datum.u <= u_param
+)
+
+curve_after = alt.Chart(curve_data).mark_line(opacity=0.2).encode(
+    x="x:Q",
+    y="y:Q",
+).transform_filter(
+    alt.datum.u > u_param
+)
+
+bezier_curve = (curve_after + curve_before).properties(height=420)
 
 # Level 0 control polygon (dashed)
 control_segments = alt.Chart(casteljau_data).mark_rule(strokeDash=[6, 4]).encode(
@@ -246,287 +317,25 @@ chart = (
 chart
 ```
 
-### De Casteljau's Algorithm
 
-Paul de Casteljau developed the algorithm at Citroën as a a recursive method for evaluating Bézier curves. The method provides an intuitive **geometric construction**, where the curve is defined by successive (linear) interpolations between control points. Unlike polynomial-based approaches, De Casteljau's algorithm relies solely on **linear interpolation (lerp)**, making it numerically stable and robust.
+:::{note .simple .dropdown icon=false open=false} Complexity Analysis
 
-Given a set of control points $ P_0, P_1, \dots, P_n $, the Bézier curve is defined parametrically by a recursive interpolation process:
-
-1. At each step, new intermediate points are computed by performing linear interpolation between adjacent points from the previous step.
-2. The interpolation follows the equation:
-
-   $$
-   P_i^{(k)}(t) = (1 - t) P_i^{(k-1)} + t P_{i+1}^{(k-1)}
-   $$
-
-   where:
-   - $ P_i^{(0)} $ are the original control points.
-   - $ P_i^{(r)} $ are the intermediate points at recursion depth $ r $.
-   - $ t $ is the curve parameter, ranging from 0 to 1.
-
-3. This process continues until only one point remains, which is the evaluated point on the Bézier curve for the given $ t $.
-
-
-
-
-##### Python Helpers
-
-```{code-cell} python
-import numpy as np
-import matplotlib.pyplot as plt
-import ipywidgets as widgets
-from ipywidgets import interact, Play, jslink, HBox, VBox
-
-import time
-
-# Enable inline plotting
-%matplotlib inline
-
-# Linear interpolation (lerp) function
-def lerp(p0, p1, t):
-    """Perform linear interpolation between points p0 and p1 using parameter t."""
-    return (1 - t) * np.array(p0) + t * np.array(p1)
-
-# De Casteljau's algorithm using only lerp
-def de_casteljau(points, t):
-    """
-    Computes the point on the Bézier curve at parameter t by recursively applying lerp.
-    
-    Parameters:
-      points: List of control points (each a tuple or list of coordinates)
-      t: Parameter value in [0, 1]
-    
-    Returns:
-      point: The computed point on the Bézier curve at t.
-      levels: A list of lists, where each inner list contains the intermediate points at that recursion level.
-    """
-    points = [np.array(p) for p in points]
-    levels = [points]  # level 0: the original control points
-    while len(points) > 1:
-        points = [lerp(points[i], points[i + 1], t) for i in range(len(points) - 1)]
-        levels.append(points)
-    return points[0], levels
-```
-
-### Geometric Construction
-
-The following cell creates an interactive animation of the De Casteljau algorithm using a slider to vary the parameter **t**. In addition, a **Play** widget is linked to the slider so that the animation runs automatically.
-
-The animation shows:
-
-- The **control polygon** (dashed line connecting the control points).
-- The **intermediate levels** of linear interpolated points (each in a different color).
-- The final computed point on the Bézier curve for the given t.
-
-##### Python Helpers
-
-```{code-cell} python
-def plot_de_casteljau(t):
-    """
-    Plots the control polygon, intermediate levels, and the Bézier curve traced from t=0 to t.
-    """
-    colors = ['red', 'green', 'blue', 'orange', 'black']
-    cp = np.array(control_points)
-    # Compute current point and intermediate levels for t
-    point, levels = de_casteljau(control_points, t)
-    
-    plt.figure(figsize=(15, 10))
-    
-    # Plot the control polygon
-    #plt.plot(cp[:, 0], cp[:, 1], 'k--', label='Control Polygon')
-    plt.plot(cp[:, 0], cp[:, 1], 'ko')
-    
-    # Plot each intermediate level
-    for i, level in enumerate(levels[:-1]):  # skip the final level (single point)
-        pts = np.array(level)
-        plt.plot(pts[:, 0], pts[:, 1], 'o-', color=colors[i % len(colors)], label=f'Recursion Level {i+1}')
-    
-    # Trace the curve from t=0 to the current t
-    if t > 0:
-        t_values = np.linspace(0, t, 100)
-        curve_points = np.array([de_casteljau(control_points, ti)[0] for ti in t_values])
-        plt.plot(curve_points[:, 0], curve_points[:, 1], 'k-', linewidth=2, label='Traced Curve')
-    
-    # Highlight the final computed point on the curve
-    plt.plot(point[0], point[1], 'ko', markersize=10, label=f'Curve Point t={t:.2f}')
-    
-    plt.title("De Casteljau's Algorithm: Geometric Construction")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-```
-
-##### Run the following code to get an animated view
-
-```{code-cell} python
-# Define control points and additional variables for the animation
-control_points = [(0, 0), (1, 2), (3, 3), (4, 0)]
-
-# Create a FloatSlider widget for t
-t_slider = widgets.FloatSlider(value=0.0, min=0.0, max=1.0, step=0.01, description='t')
-
-# Create a Play widget to animate t (0 to 100 corresponds to t from 0 to 1)
-play = widgets.Play(value=0, min=0, max=100, step=1, description="Press play", interval=100)
-
-# Link the Play widget to the slider using an observer with a simple transform.
-def update_slider(change):
-    t_slider.value = change['new'] / 100
-
-play.observe(update_slider, names='value')
-
-# Display the Play widget and slider side by side.
-display(HBox([play]))
-
-# Create the interactive plot: as the slider moves, plot_de_casteljau is updated.
-interact(plot_de_casteljau, t=t_slider);
-```
-
-## 3. Complexity Analysis
-
-The computational complexity of De Casteljau’s algorithm can be analyzed as follows:
-
-- For **n control points**, the algorithm requires computing **n-1 interpolations** at each recursion level.
-- The total number of interpolations performed follows a triangular sum:
+The computational complexity of de Casteljau’s algorithm can be analyzed as follows. For $N_p$ control points, the algorithm requires computing $N_p -1$ interpolations at each recursion level. Hence, the total number of interpolations performed follows a triangular sum:
 
   $$
-  \sum_{r=1}^{n-1} r = \frac{(n-1) n}{2}
+  \sum_{r=1}^{N_p-1}  r\frac{(N_p-1) N_p}{2}
   $$
 
-- Therefore, the **time complexity is $ O(n^2) $**, meaning that as the number of control points increases, the computation time grows quadratically. More precisely, the computational complexity is  **$ O(d n^2) $** where d is the number of dimensions.
-
-
+Therefore, the **time complexity is $ O(n^2) $**, meaning that as the number of control points increases, the computation time grows quadratically. More precisely, the computational complexity is  **$ O(d n^2) $** where d is the number of dimensions.
 
 This quadratic complexity is evident in the generated plot (below), where computation time increases non-linearly as control points increase.
 
-###### Python Helpers
-
-```{code-cell} python
-def measure_de_casteljau_time(n, t=0.5, trials=10):
-    """
-    Measures the average computation time of the de_casteljau algorithm for n control points.
-    
-    Parameters:
-      n: Number of control points.
-      t: Parameter for the algorithm.
-      trials: Number of runs to average over.
-    
-    Returns:
-      Average computation time in seconds.
-    """
-    total_time = 0.0
-    for _ in range(trials):
-        # Generate n random 2D control points.
-        control_points = [np.random.rand(2) for _ in range(n)]
-        start_time = time.perf_counter()
-        de_casteljau(control_points, t)
-        end_time = time.perf_counter()
-        total_time += (end_time - start_time)
-    return total_time / trials
-
-
-def measure_curve_time(n, discretization=100, trials=100):
-    """
-    Measures the average computation time to compute a full Bézier curve 
-    (evaluated at a specified number of discretization points) for a curve 
-    defined by n control points.
-    
-    Parameters:
-      n: Number of control points.
-      discretization: Number of points along the curve (t values).
-      trials: Number of trials for averaging.
-    
-    Returns:
-      Average computation time (in seconds) for computing the full curve.
-    """
-    total_time = 0.0
-    for _ in range(trials):
-        control_points = [np.random.rand(2) for _ in range(n)]
-        t_values = np.linspace(0, 1, discretization)
-        start_time = time.perf_counter()
-        for t in t_values:
-            de_casteljau(control_points, t)
-        end_time = time.perf_counter()
-        total_time += (end_time - start_time)
-    return total_time / trials
-
-def plot_computation_time(max_points=50, t=0.5, trials=100):
-    """
-    Plots the average computation time of De Casteljau's algorithm vs. the number of control points,
-    with computation time converted to milliseconds (dividing seconds by 1000).
-    
-    Parameters:
-      max_points: Maximum number of control points to test (starting from 2).
-      t: Parameter for the algorithm.
-      trials: Number of runs per test for averaging.
-    """
-    num_points = list(range(2, max_points + 1))
-    # Collect times as a list and convert to a numpy array for element-wise operations.
-    times = np.array([measure_de_casteljau_time(n, t, trials) for n in num_points])
-    
-    plt.figure(figsize=(10, 6))
-    plt.plot(num_points, times * 1000, marker='o')  # times in milliseconds
-    plt.xlabel('Number of Control Points')
-    plt.ylabel('Average Computation Time (ms)')
-    plt.title("De Casteljau's Algorithm Computation Time vs. Number of Control Points")
-    plt.grid(True)
-    plt.show()
-
-def plot_computation_time_points(discretization_range, cps_values, trials):
-    # Dictionary to store computation times (in milliseconds)
-    results = {}
-    
-    for cps in cps_values:
-        times = []
-        for d in discretization_range:
-            avg_time = measure_curve_time(cps, discretization=d, trials=10)
-            times.append(avg_time * 1000)  # convert seconds to milliseconds
-        results[cps] = times
-    
-    # Plot the results: x-axis is the number of discretization points; one curve per control point count
-    plt.figure(figsize=(10, 6))
-    for cps in cps_values:
-        plt.plot(list(discretization_range), results[cps], marker='o', label=f'{cps} control points')
-    plt.xlabel('Number of Discretization Points')
-    plt.ylabel('Average Computation Time (milliseconds)')
-    plt.title('Computation Time vs. Discretization Points (per Bézier Curve)')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-```
-
-##### Plot the computation time
-The `plot_computation_time` function takes the following input:
-
-- max_points: Maximum number of control points to test (starting from 2).
-- t: Parameter for the algorithm.
-- trials: Number of runs per test for averaging.
-
-```{code-cell} python
-# Run the function to display the plot.
-plot_computation_time(max_points=50, t=0.5, trials=100)
-```
-
-It also depends on the number of discretization points (the point on the curve I want to cumpute, it affect visualization performance)
-
-The `plot_computation_time` function takes the following input:
-
-- max_points: Maximum number of control points to test (starting from 2).
-- t: Parameter for the algorithm.
-- trials: Number of runs per test for averaging.
-
-```{code-cell} python
-# Define a range for the number of discretization points
-discretization_range = range(10, 201, 10)  # 10, 20, ... 200
-
-# Define the control point counts to test
-cps_values = [3, 4, 5]
-
-plot_computation_time_points(discretization_range, cps_values, trials= 100)
-```
-
 De Casteljau’s algorithm **quadratic complexity** can become a bottleneck for high-degree curves. 
+
+:::
+
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/book/partA/02_lab_bezier.ipynb)
 
 ## The Bernstein Form of a Bézier Curve
 
