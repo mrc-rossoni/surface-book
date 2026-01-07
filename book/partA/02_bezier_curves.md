@@ -330,6 +330,22 @@ Therefore, the **time complexity is $ O(n^2) $**, meaning that as the number of 
 
 This quadratic complexity is evident in the generated plot (below), where computation time increases non-linearly as control points increase.
 
+```{figure}./imgs/de_casteljau_time.png
+:label: de_casteljau_time
+:alt: Number of control point vs Computational Time
+:align: center
+
+Number of control point vs Computational Time
+```
+
+```{figure}./imgs/de_casteljau_time_log.png
+:label: de_casteljau_time_log
+:alt: Number of control point vs Computational Time - Log-log scale
+:align: center
+
+Number of control point vs Computational Time - Log-log scale
+```
+
 De Casteljau’s algorithm **quadratic complexity** can become a bottleneck for high-degree curves. 
 
 :::
