@@ -87,7 +87,7 @@ P(t) = P_0^{(n)}(t)
 Repeating the procedure for many values of {math}`t` generates a whole curve. The final point of each recursion {math}`P(t)` lies on a curve, the so called **Bézier curve**. The agorithm just described is the **de Casteljau’s Algorithm**
 
 
-The point {math}`P(t)` is the result of the recursion for a given value of {math}`t`, and it lies on the so called **Bézier curve**, defined by the control points (`P_0, P_1, \dots, P_n`).
+The point {math}`P(t)` is the result of the recursion for a given value of {math}`t`, and it lies on the so called **Bézier curve**, defined by the control points ({math}`P_0, P_1, \dots, P_n`).
 By repeating the procedure for many values of {math}`t`, we obtain the entire **Bézier curve**. The recursive construction described above is known as **de Casteljau’s algorithm**.
 
 Paul de Casteljau developed the algorithm at Citroën as a recursive method for evaluating Bézier curves. The method provides an intuitive geometric construction, where the curve is defined by successive (linear) interpolations between control points. Unlike polynomial-based approaches, De Casteljau's algorithm relies solely on linear interpolation, making it numerically stable and robust.
