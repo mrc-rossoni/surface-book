@@ -8,3 +8,7 @@
 
 ## Engineering and CAD perspective
 - Hoschek, J., Lasser, D. *Fundamentals of Computer Aided Geometric Design.*
+
+
+## 
+- 10.14658/PUPJ-DRNA-2024-3-9

@@ -346,81 +346,365 @@ Number of control point vs Computational Time
 Number of control point vs Computational Time - Log-log scale
 ```
 
-De Casteljau’s algorithm **quadratic complexity** can become a bottleneck for high-degree curves. 
+De Casteljau’s algorithm quadratic complexity can become a bottleneck for high-degree curves. {cite}`Wo_ny_2020` {cite}`Farin_1983`
 
 :::
 
+Python Implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/book/partA/02_lab_bezier.ipynb)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/book/partA/02_lab_bezier.ipynb)
 
-## The Bernstein Form of a Bézier Curve
+## Bézier Curve with Berstein Polynomials
 
-De Casteljau’s algorithm is an elegant method for evaluating Bézier curves, relying **exclusively on linear interpolation** for numerical stability. However, Bézier approached curves from a different perspective, highlighting the need for an *explicit* representation of the curve. In other words, expressing a Bézier curve through a non-recursive mathematical formula—rather than an iterative algorithm—is essential. This explicit representation not only significantly facilitates further theoretical developments but also enables more efficient implementations.
+De Casteljau’s algorithm provides a geometric and numerically stable method for evaluating Bézier curves, relying exclusively on repeated linear interpolation. Each recursion step forms affine combinations of consecutive points. Therefore, the final point on the curve must be expressible as a weighted sum of the original control points, where the weights depend only on the parameter {math}`t`. As a matter of fact, Bézier approached the curves from a different perspective, highlighting the need for an *explicit* representation of the curve. This motivates an explicit basis-function representation of the curve:
 
-Specifically, any point on a curve segment must be given by a parametric function of the following form:
+```{math}
+C(t)=\sum_{i=0}^{n} P_i\,N_i(t),
+\qquad t\in[0,1]
+```
+
+where {math}`P_i` are the vertices of the control polygon, and {math}`N_i(t)` are scalar basis functions. Bézier set forth the properties that the {math}`N_i(t)` basis functions must have and look for (i.e. deliberately choose!) specific functions that that make the representation suitable for geometric design:
+- **Endpoint interpolation:** the curve must interpolate the first and last control points.
+- **Local control of derivatives:** the {math}`r`-th derivative at an endpoint must depend only on the {math}`r` neighboring control points.  
+  In particular, the tangent direction at the endpoints is controlled by the first and last edge of the control polygon, and in fact:
+  ```{math}
+  C'(0)=n(P_1-P_0),\qquad C'(1)=n(P_n-P_{n-1}).
+  ```
+- **Symmetry:** reversing the control points should not change the curve shape, which corresponds to symmetry under {math}`t \mapsto 1-t`.
+
+A family of polynomials satisfying these requirements is given by the **Bernstein polynomials**.
+
+:::{prf:definition .simple icon=false open=true}
+The Bernstein polynomial of degree {math}`n` and index {math}`i` is defined as:
+
+```{math}
+B_i^n(t)=\binom{n}{i}t^i(1-t)^{n-i}
+```
+
+where the binomial coefficient is:
+
+```{math}
+\binom{n}{i}=\frac{n!}{i!(n-i)!}.
+```
+:::
+
+
+Replacing the generic basis {math}`N_i(t)` with the Bernstein basis yields the Bézier curve:
+
+```{math}
+C(t)=\sum_{i=0}^{n}P_i\,B_i^n(t),
+\qquad t\in[0,1].
+```
+
+If there are {math}`n+1` control points, then {math}`C(t)` is a polynomial curve of **degree {math}`n`**. In this sense, the control points {math}`P_i` are the coefficients of the curve in the Bernstein basis.
+
+Moreover, every intermediate point in De Casteljau’s construction is itself a Bézier combination:
+
+```{math}
+P_i^{(r)}(t)=\sum_{j=0}^{r}P_{i+j}B_j^{r}(t),
+\qquad r=0,\dots,n.
+```
+
+and the curve point corresponds to the final recursion step:
+
+```{math}
+C(t)=P_0^{(n)}(t)=\sum_{j=0}^{n}P_jB_j^{n}(t).
+```
+By expanding the De Casteljau recursion, one finds that the functions {math}`N_i(t)` are precisely the Bernstein polynomials. Thus, Bernstein polynomials provide the closed-form (non-recursive) expression of the same geometric construction. See proof!
+
+:::{prf:proof .simple .dropdown icon=false open=false} Proof that De Casteljau’s construction leads to Bernstein polynomials
+We prove by induction on the recursion level {math}`r` that every intermediate point in De Casteljau’s algorithm can be written as:
+
+```{math}
+P_i^{(r)}(t)=\sum_{j=0}^{r} P_{i+j}\,B_j^{r}(t),
+\qquad r=0,\dots,n,\;\; i=0,\dots,n-r.
+```
+
+where {math}`B_j^r(t)` are Bernstein polynomials:
+
+```{math}
+B_j^r(t)=\binom{r}{j}t^j(1-t)^{r-j}.
+```
+
+**Base case ({math}`r=0`).**  
+At recursion level {math}`r=0`, we have {math}`P_i^{(0)}(t)=P_i`. Since {math}`B_0^0(t)=1`, the formula holds:
+
+```{math}
+P_i^{(0)}(t)=P_i=\sum_{j=0}^{0}P_{i+j}B_j^0(t).
+```
+
+**Induction step.**  
+Assume the statement holds at level {math}`r-1`. Then, by the De Casteljau recursion:
+
+```{math}
+P_i^{(r)}(t)=(1-t)P_i^{(r-1)}(t)+tP_{i+1}^{(r-1)}(t).
+```
+
+Using the induction hypothesis:
+
+```{math}
+P_i^{(r-1)}(t)=\sum_{j=0}^{r-1}P_{i+j}B_j^{r-1}(t),
+\qquad
+P_{i+1}^{(r-1)}(t)=\sum_{j=0}^{r-1}P_{i+1+j}B_j^{r-1}(t).
+```
+
+Substituting:
+
+```{math}
+P_i^{(r)}(t)=
+\sum_{j=0}^{r-1}P_{i+j}(1-t)B_j^{r-1}(t)
++
+\sum_{j=0}^{r-1}P_{i+1+j}\,t\,B_j^{r-1}(t).
+```
+
+Reindex the second sum with {math}`k=j+1` (so {math}`k=1,\dots,r`):
+
+```{math}
+P_i^{(r)}(t)=
+P_i(1-t)B_0^{r-1}(t)
++
+\sum_{j=1}^{r-1}P_{i+j}\left[(1-t)B_j^{r-1}(t)+tB_{j-1}^{r-1}(t)\right]
++
+P_{i+r}tB_{r-1}^{r-1}(t).
+```
+
+Now recall the Bernstein recursion identity:
+
+```{math}
+B_j^r(t)=(1-t)B_j^{r-1}(t)+tB_{j-1}^{r-1}(t).
+```
+
+Therefore, the expression becomes:
+
+```{math}
+P_i^{(r)}(t)=\sum_{j=0}^{r}P_{i+j}B_j^{r}(t),
+```
+
+which completes the induction.
+
+Finally, at recursion level {math}`r=n` we obtain the curve point:
+
+```{math}
+C(t)=P_0^{(n)}(t)=\sum_{j=0}^{n}P_jB_j^{n}(t).
+```
+
+Hence, the weights produced by De Casteljau’s geometric construction are exactly the Bernstein polynomials.
+:::
+
+
+Python Implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/code/02_Bernstein.ipynb)
+
+
+## Properties
+The key properties are: 
+
+1. Endpoint interpolation {math}`C(0)=P_0,C(1)=P_n`.
+2. Convex hull property. For {math}`t \in [0,1]`, the curve lies inside the convex hull of its control points. This gives a strong geometric bound and makes interactive editing predictable. The Bèzier curves always lies in the convex hull (interference checking). A planar polygon always generates a planar curve.
+3. Variation diminishing property. The curve does not oscillate more than its control polygon, which makes Bézier curves stable and well-behaved for design.
+4. Approximating curve: it does not pass through the control points. Better global and local control on the shape of the curve (there are better ways!)
+5. Invariant under affine maps: Translation, scaling, rotation and shear are example of affine maps. NB: they are not projectively invariant!
+6. Invariant under affine parameter transformation: i.e.: not bounded to the interval [0,1].
+
+
+
+
+## Matrix Form
+
+NB: outer product, denoted with $\otimes$, is defined as follows. Given two vectors $u = (1 \times m)$ and $v = (1 \times n)$:
 
 $$
-    P(t) = \sum_{i=0}^{n} P_i f_{i}(t)
+\mathbf {u} =
+\begin{bmatrix} 
+u_{1} \\ 
+u_{2} \\ 
+\vdots \\ 
+u_{m} 
+\end{bmatrix}, 
+\quad 
+\mathbf {v} =
+\begin{bmatrix} 
+v_{1} \\ 
+v_{2} \\ 
+\vdots \\ 
+v_{n} 
+\end{bmatrix}
 $$
 
-Where $P_{i}$ are the vectors of the $n+1$ vertices of the control polygon.
-
-Then, Bézier set forth the properties that the $f_{i}(t)$ basis function must have and look for specific functions that meet these requirements. The requirements were:
-
-- The functions must interpolate the first ($P_0$) and the last ($P_n$) vertex points.
-- The $r-th$ derivative at an endpoint must be determined by its $r$ neighboring vertices. Thus, the tangent (first derivative) at $P_0$ must be given by $P_1 - P_0$ and the tangent at $P_n$ by $P_n - P_{n-1}$. This give the user the control of the tangent on the curve at each end. The second derivative at $P_0$ must bedetermined by $P_0, P_1$ and $P_2$, and so on.
-- The functions $f_{i}(t)$ must be symmetric w.r.t. $t$ and $t-1$. This means that we can revers the sequence of the vertex points defining the curve without changing the shape of the curve.
-
-Bézier chose a family of functions called *Bernstein Polynomials*. Bernstein polynomials are a family of polynomials that play an important role in approximation theory and computational mathematics. They are particularly famous for their use in Bézier curves in computer graphics and geometric modeling.
+The outer product, $\mathbf {u} \otimes \mathbf {v}$, is a $m \times n$ matrix:
 
 $$
-  B_{n,i}(t) = \binom{n}{i} t^n (1-t)^{n-i}
+\mathbf {u} \otimes \mathbf {v} =\mathbf {A} =
+\begin{bmatrix} 
+u_{1}v_{1} & u_{1}v_{2} & \dots & u_{1}v_{n} \\ 
+u_{2}v_{1} & u_{2}v_{2} & \dots & u_{2}v_{n} \\ 
+\vdots & \vdots & \ddots & \vdots \\ 
+u_{m}v_{1} & u_{m}v_{2} & \dots & u_{m}v_{n} 
+\end{bmatrix}
 $$
 
-The Binomial coefficient is defined as follow:
+## Bézier Curve in Matrix Form
+Using the outer product notation, we rewrite the Bézier curve equation as:
 
 $$
-  \binom{n}{i} = \frac{n!}{i!(n-i)!}
+\mathbf{P}(t) =
+\left( \mathbf{B}(t) \otimes \mathbf{P} \right)
 $$
 
+where:
+- $\mathbf{B}(t)$ is the Bernstein basis vector:
+
+$$
+\mathbf{B}(t) =
+\begin{bmatrix}
+B_{n,0}(t) \\ 
+B_{n,1}(t) \\ 
+\vdots \\ 
+B_{n,n-1}(t)
+\end{bmatrix}
+$$
+
+- $\mathbf{P}$ is the vector of control points:
+
+$$
+\mathbf{P} =
+\begin{bmatrix}
+\mathbf{P}_0 \\ 
+\mathbf{P}_1 \\ 
+\vdots \\ 
+\mathbf{P}_{n-1}
+\end{bmatrix}
+$$
+
+Since the outer product results in a summation of element-wise products, the final Bézier curve equation remains:
+
+$$
+\mathbf{P}(t) =
+\mathbf{B}(t)^\top \mathbf{P}
+$$
+
+Alternatively, using the binomial coefficient matrix:
+
+$$
+\mathbf{P}(t) =
+\begin{bmatrix}
+1 & - (n-1) & \binom{n-1}{2} & \dots & (-1)^{n-1} \\
+0 & 1 & - (n-2) & \dots & (-1)^{n-2} \binom{n-1}{n-1} \\
+0 & 0 & 1 & \dots & (-1)^{n-3} \binom{n-1}{n-2} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \dots & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+t \\
+t^2 \\
+\vdots \\
+t^{n-1}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{P}_0 \\
+\mathbf{P}_1 \\
+\vdots \\
+\mathbf{P}_{n-1}
+\end{bmatrix}
+$$
+
+This representation generalizes Bézier curves for any number of control points, allowing for computational efficiency using matrix multiplication.
 
 
+#### Quadratic Bézier Curve
 
-## 2. Definition
-A Bézier curve of degree \(n\) is defined by \(n+1\) control points \(P_0, ..., P_n\) and is written as:
+For a quadratic Bézier curve defined by three control points $\mathbf{P}_0, \mathbf{P}_1, \mathbf{P}_2$, the parametric equation is:
 
-\[
-C(u) = \sum_{i=0}^{n} B_i^n(u) P_i, \qquad u \in [0,1]
-\]
+$$
+\mathbf{P}(t) = (1-t)^2 \mathbf{P}_0 + 2(1-t)t \mathbf{P}_1 + t^2 \mathbf{P}_2
+$$
 
-where \(B_i^n(u)\) are the **Bernstein polynomials**:
+which can be rewritten in matrix form as:
 
-\[
-B_i^n(u) = \binom{n}{i} u^i (1-u)^{n-i}
-\]
+$$
+\mathbf{P}(t) =
+\begin{bmatrix}
+(1-t)^2 & 2(1-t)t & t^2
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{P}_0 \\
+\mathbf{P}_1 \\
+\mathbf{P}_2
+\end{bmatrix}
+$$
 
----
+Alternatively, using a matrix representation:
 
-## 3. Key properties
+$$
+\mathbf{P}(t) =
+\begin{bmatrix}
+1 & -2 & 1 \\
+0 & 2 & -2 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+t \\
+t^2
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{P}_0 \\
+\mathbf{P}_1 \\
+\mathbf{P}_2
+\end{bmatrix}
+$$
 
-### 3.1 Endpoint interpolation
-\[
-C(0) = P_0,\qquad C(1) = P_n
-\]
+#### Cubic Bézier Curve
 
-### 3.2 Convex hull property
-For \(u \in [0,1]\), the curve lies inside the convex hull of its control points.
-This is extremely important in engineering: it gives a geometric bound
-and makes control point editing predictable.
+For a cubic Bézier curve defined by four control points $\mathbf{P}_0, \mathbf{P}_1, \mathbf{P}_2, \mathbf{P}_3$, the parametric equation is:
 
-### 3.3 Variation diminishing property
-The curve does not oscillate more than its control polygon.
-This makes Bézier curves stable and well-behaved for design.
+$$
+\mathbf{P}(t) = (1-t)^3 \mathbf{P}_0 + 3(1-t)^2 t \mathbf{P}_1 + 3(1-t)t^2 \mathbf{P}_2 + t^3 \mathbf{P}_3
+$$
 
----
+which can be rewritten in matrix form as:
 
-## 4. Evaluating a Bézier curve
-We can evaluate \(C(u)\) in two main ways:
+$$
+\mathbf{P}(t) =
+\begin{bmatrix}
+(1-t)^3 & 3(1-t)^2t & 3(1-t)t^2 & t^3
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{P}_0 \\
+\mathbf{P}_1 \\
+\mathbf{P}_2 \\
+\mathbf{P}_3
+\end{bmatrix}
+$$
+
+Alternatively, using a matrix representation:
+
+$$
+\mathbf{P}(t) =
+\begin{bmatrix}
+1 & -3 & 3 & -1 \\
+0 & 3 & -6 & 3 \\
+0 & 0 & 3 & -3 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+t \\
+t^2 \\
+t^3
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{P}_0 \\
+\mathbf{P}_1 \\
+\mathbf{P}_2 \\
+\mathbf{P}_3
+\end{bmatrix}
+$$
+
+This matrix representation allows efficient computation of Bézier curves using linear algebra.
+
+
+# Conclusions
+We can evaluate {math}`C(u)` in two main ways:
 
 1. **Direct Bernstein basis evaluation**  
    Simple, but can be numerically unstable for high degree.
@@ -428,28 +712,6 @@ We can evaluate \(C(u)\) in two main ways:
 2. **De Casteljau algorithm**  
    More stable; based on repeated linear interpolation.
 
----
-
-## 5. De Casteljau algorithm (derivation)
-Given control points \(P_0, ..., P_n\), define recursively:
-
-\[
-P_i^{(0)} = P_i
-\]
-
-\[
-P_i^{(r)} = (1-u)P_i^{(r-1)} + uP_{i+1}^{(r-1)}
-\]
-
-for \(r = 1, ..., n\).
-
-The final point on the curve is:
-
-\[
-C(u) = P_0^{(n)}
-\]
-
----
 
 ## 6. Engineering note: why stability matters
 In engineering workflows, Bézier curves may appear indirectly:
@@ -463,6 +725,7 @@ of evaluating high-degree polynomials.
 ---
 
 ## Exercises
-1. Show that \(\sum_{i=0}^{n} B_i^n(u) = 1\).
+1. Show that {math}`\sum_{i=0}^{n} B_i^n(u) = 1`.
 2. Prove endpoint interpolation.
 3. Implement De Casteljau and compare its output with the Bernstein evaluation for increasing degree.
+

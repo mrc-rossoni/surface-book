@@ -48,6 +48,8 @@ project:
       - file: book/partB/08_pointclouds.md
       - file: book/partB/08_lab_pointclouds.ipynb
       - file: book/partB/10_projects.md
+  bibliography:
+    - book/references.bib
 
   math:
     renderer: mathjax
@@ -61,4 +63,5 @@ site:
     #issues_button: true
     #hide_myst_branding: true
     hide_toc: false
+    numbered_references: true
 
