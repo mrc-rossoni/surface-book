@@ -387,6 +387,138 @@ where the binomial coefficient is:
 ```
 :::
 
+The following interactive chart shows how the Bernstein polynomials looks like by changing the degree:
+
+
+```{code-cell} ipython3
+:tags: [remove-input]
+import numpy as np
+import altair as alt
+from math import comb
+
+# ------------------------------------------------------------
+# Bernstein polynomial
+# ------------------------------------------------------------
+def bernstein_poly(n, i, t):
+    """Bernstein polynomial B_i^n(t)."""
+    return comb(n, i) * (t**i) * ((1 - t)**(n - i))
+
+# ------------------------------------------------------------
+# Precompute Bernstein basis for degrees 1..N_MAX
+# ------------------------------------------------------------
+N_MAX = 10
+t_curve = np.linspace(0, 1, 250)
+
+basis_values = []
+for n in range(1, N_MAX + 1):
+    for i in range(n + 1):
+        for t in t_curve:
+            basis_values.append({
+                "n": n,
+                "i": i,
+                "t": float(t),
+                "value": float(bernstein_poly(n, i, float(t))),
+                "label": f"B_{i}^{n}"
+            })
+
+basis_data = alt.Data(values=basis_values)
+
+# ------------------------------------------------------------
+# Precompute values at selected t (for marker + label)
+# ------------------------------------------------------------
+t_grid = np.linspace(0, 1, 101)
+
+marker_values = []
+for n in range(1, N_MAX + 1):
+    for t_sel in t_grid:
+        t_sel = float(t_sel)
+        for i in range(n + 1):
+            val = bernstein_poly(n, i, t_sel)
+            marker_values.append({
+                "n": n,
+                "i": i,
+                "t_sel": t_sel,
+                "value": float(val),
+                "value_txt": f"{val:.2f}",
+                "label": f"B_{i}^{n}"
+            })
+
+marker_data = alt.Data(values=marker_values)
+
+# ------------------------------------------------------------
+# Sliders
+# ------------------------------------------------------------
+n_slider = alt.binding_range(min=1, max=N_MAX, step=1, name="degree n: ")
+n_param = alt.param(value=3, bind=n_slider)
+
+t_slider = alt.binding_range(min=0, max=1, step=0.01, name="t: ")
+t_param = alt.param(value=0.30, bind=t_slider)
+
+# ------------------------------------------------------------
+# Color palette (matching your De Casteljau example)
+# ------------------------------------------------------------
+casteljau_palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
+color_scale = alt.Scale(range=casteljau_palette)
+
+# ------------------------------------------------------------
+# Plot: Bernstein basis functions (filtered by degree)
+# ------------------------------------------------------------
+basis_lines = alt.Chart(basis_data).mark_line().encode(
+    x=alt.X("t:Q", title="t"),
+    y=alt.Y("value:Q", title="B_i^n(t)"),
+    color=alt.Color(
+    "label:N",
+    title="Bernstein basis",
+    scale=color_scale
+    ),
+    tooltip=["label:N", "t:Q", "value:Q"]
+).transform_filter(
+    alt.datum.n == n_param
+).properties(
+    height=450,
+    title="Bernstein Basis Polynomials"
+)
+
+# Markers at selected t
+markers = alt.Chart(marker_data).mark_point(size=120, filled=True).encode(
+    x=alt.X("t_sel:Q"),
+    y=alt.Y("value:Q"),
+    color=alt.Color(
+    "label:N",
+    title="Bernstein basis",
+    scale=color_scale
+    ),
+    tooltip=["i:O", "value:Q"]
+).transform_filter(
+    (alt.datum.n == n_param) & (alt.datum.t_sel == t_param)
+)
+
+# Labels next to markers
+labels = alt.Chart(marker_data).mark_text(
+    align="left",
+    dx=8,
+    dy=-6,
+    fontSize=12
+).encode(
+    x="t_sel:Q",
+    y="value:Q",
+    text="value_txt:N",
+    color=alt.Color(
+    "label:N",
+    title="Bernstein basis",
+    scale=color_scale
+    )
+).transform_filter(
+    (alt.datum.n == n_param) & (alt.datum.t_sel == t_param)
+)
+
+# Combine
+chart = (basis_lines + markers + labels).add_params(n_param, t_param)
+
+chart
+
+```
+
 
 Replacing the generic basis {math}`N_i(t)` with the Bernstein basis yields the Bézier curve:
 
@@ -396,6 +528,233 @@ C(t)=\sum_{i=0}^{n}P_i\,B_i^n(t),
 ```
 
 If there are {math}`n+1` control points, then {math}`C(t)` is a polynomial curve of **degree {math}`n`**. In this sense, the control points {math}`P_i` are the coefficients of the curve in the Bernstein basis.
+
+```{code-cell} ipython3
+:tags: [remove-input]
+import numpy as np
+import altair as alt
+from math import comb
+
+# ------------------------------------------------------------
+# Bernstein basis
+# ------------------------------------------------------------
+def bernstein_poly(n, i, t):
+    """Bernstein polynomial B_i^n(t)."""
+    return comb(n, i) * (t**i) * ((1 - t) ** (n - i))
+
+
+def bernstein_basis_matrix(n, t_values):
+    """
+    Full Bernstein basis matrix:
+    rows correspond to t, columns to i.
+    shape = (len(t_values), n+1)
+    """
+    t_values = np.asarray(t_values, dtype=float)
+    B = np.zeros((len(t_values), n + 1))
+    for i in range(n + 1):
+        B[:, i] = [bernstein_poly(n, i, float(t)) for t in t_values]
+    return B
+
+
+# ------------------------------------------------------------
+# Bézier curve evaluation using Bernstein basis
+# ------------------------------------------------------------
+def bezier_eval(control_points, t_values):
+    """
+    Evaluate Bézier curve points using Bernstein basis.
+    control_points: (n+1, 2)
+    t_values: array in [0,1]
+    """
+    P = np.asarray(control_points, dtype=float)
+    n = len(P) - 1
+    B = bernstein_basis_matrix(n, t_values)  # (m, n+1)
+    C = B @ P                                # (m, 2)
+    return C, B
+
+
+# ------------------------------------------------------------
+# Example control points (edit freely)
+# ------------------------------------------------------------
+cps = np.array([
+    [0.0, 0.0],
+    [3.0, 2.0],
+    [6.0, 2.0],
+    [8.0, 0.0],
+])
+
+n = len(cps) - 1
+t_curve = np.linspace(0, 1, 250)
+
+curve_pts, B_curve = bezier_eval(cps, t_curve)
+
+# ------------------------------------------------------------
+# Build "values" lists (Altair-friendly, Pandas-free)
+# ------------------------------------------------------------
+curve_values = [{"t": float(t), "x": float(p[0]), "y": float(p[1])}
+                for t, p in zip(t_curve, curve_pts)]
+
+control_values = [{"x": float(p[0]), "y": float(p[1]), "i": i}
+                  for i, p in enumerate(cps)]
+
+basis_values = []
+for i in range(n + 1):
+    for t, val in zip(t_curve, B_curve[:, i]):
+        basis_values.append({
+            "t": float(t),
+            "value": float(val),
+            "i": i,
+            "label": f"B_{n},{i}"
+        })
+
+# Precompute selected basis values + point on curve for slider display
+t_grid = np.linspace(0, 1, 101)
+
+selected_basis_values = []
+selected_point_values = []
+
+for t_sel in t_grid:
+    t_sel = float(t_sel)
+
+    # Bernstein weights at t_sel
+    B_sel = [bernstein_poly(n, i, t_sel) for i in range(n + 1)]
+    C_sel = np.dot(B_sel, cps)
+
+    # Store weights (for markers + labels)
+    for i in range(n + 1):
+        selected_basis_values.append({
+            "t_sel": t_sel,
+            "i": i,
+            "B": float(B_sel[i]),
+            "B_txt": f"{B_sel[i]:.2f}"
+        })
+
+    # Store point on curve
+    selected_point_values.append({
+        "t_sel": t_sel,
+        "x": float(C_sel[0]),
+        "y": float(C_sel[1])
+    })
+
+# Wrap into Altair Data
+curve_data = alt.Data(values=curve_values)
+control_data = alt.Data(values=control_values)
+basis_data = alt.Data(values=basis_values)
+selected_basis_data = alt.Data(values=selected_basis_values)
+selected_point_data = alt.Data(values=selected_point_values)
+
+# ------------------------------------------------------------
+# Slider parameter
+# ------------------------------------------------------------
+t_slider = alt.binding_range(min=0, max=1, step=0.01, name="t: ")
+t_param = alt.param(value=0.30, bind=t_slider)
+
+# ------------------------------------------------------------
+# Consistent palette (matching your De Casteljau example)
+# ------------------------------------------------------------
+level_colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]  # up to cubic
+palette = level_colors[:n+1]
+color_scale = alt.Scale(domain=list(range(n + 1)), range=palette)
+
+# ------------------------------------------------------------
+# Plot 1: Bézier curve with "before/after" styling + control polygon + point
+# ------------------------------------------------------------
+x_min = min(v["x"] for v in curve_values) - 0.5
+x_max = max(v["x"] for v in curve_values) + 0.5
+y_min = min(v["y"] for v in curve_values) - 0.5
+y_max = max(v["y"] for v in curve_values) + 0.5
+
+curve_before = alt.Chart(curve_data).mark_line().encode(
+    x=alt.X("x:Q", title="x", scale=alt.Scale(domain=[x_min, x_max])),
+    y=alt.Y("y:Q", title="y", scale=alt.Scale(domain=[y_min, y_max])),
+).transform_filter(
+    alt.datum.t <= t_param
+)
+
+curve_after = alt.Chart(curve_data).mark_line(opacity=0.2).encode(
+    x="x:Q",
+    y="y:Q",
+).transform_filter(
+    alt.datum.t > t_param
+)
+
+control_polygon = alt.Chart(control_data).mark_line(
+    point=True,
+    strokeDash=[6, 4]
+).encode(
+    x="x:Q",
+    y="y:Q",
+    tooltip=["i:O", "x:Q", "y:Q"]
+)
+
+selected_point = alt.Chart(selected_point_data).mark_point(
+    size=220, filled=True
+).encode(
+    x="x:Q",
+    y="y:Q",
+    color=alt.value("red"),
+    tooltip=["t_sel:Q", "x:Q", "y:Q"]
+).transform_filter(
+    alt.datum.t_sel == t_param
+)
+
+bezier_plot = (
+    (curve_after + curve_before + control_polygon + selected_point)
+    .add_params(t_param)
+    .properties(height=380, title="Bézier Curve — before/after styling and point at selected t")
+)
+
+# ------------------------------------------------------------
+# Plot 2: Bernstein basis functions + marker + value labels at selected t
+# ------------------------------------------------------------
+basis_lines = alt.Chart(basis_data).mark_line().encode(
+    x=alt.X("t:Q", title="t"),
+    y=alt.Y("value:Q", title="B_i^n(t)"),
+    color=alt.Color("i:O", title="i", scale=color_scale),
+    tooltip=["label:N", "t:Q", "value:Q"]
+).properties(
+    height=380,
+    title=f"Bernstein Basis Polynomials (n={n})"
+)
+
+basis_markers = alt.Chart(selected_basis_data).mark_point(
+    size=90, filled=True
+).encode(
+    x="t_sel:Q",
+    y="B:Q",
+    color=alt.Color("i:O", scale=color_scale),
+    tooltip=["i:O", "B:Q"]
+).transform_filter(
+    alt.datum.t_sel == t_param
+)
+
+basis_labels = alt.Chart(selected_basis_data).mark_text(
+    align="left",
+    dx=6,
+    dy=-6,
+    fontSize=12
+).encode(
+    x="t_sel:Q",
+    y="B:Q",
+    text="B_txt:N",
+    color=alt.Color("i:O", scale=color_scale)
+).transform_filter(
+    alt.datum.t_sel == t_param
+)
+
+bernstein_plot = (
+    (basis_lines + basis_markers + basis_labels)
+    .add_params(t_param)
+    .properties(height=380)
+)
+
+# ------------------------------------------------------------
+# Combine plots vertically
+# ------------------------------------------------------------
+chart = alt.vconcat(bezier_plot, bernstein_plot).resolve_scale(color="independent")
+
+chart
+
+```
 
 Moreover, every intermediate point in De Casteljau’s construction is itself a Bézier combination:
 
@@ -409,8 +768,10 @@ and the curve point corresponds to the final recursion step:
 ```{math}
 C(t)=P_0^{(n)}(t)=\sum_{j=0}^{n}P_jB_j^{n}(t).
 ```
-By expanding the De Casteljau recursion, one finds that the functions {math}`N_i(t)` are precisely the Bernstein polynomials. Thus, Bernstein polynomials provide the closed-form (non-recursive) expression of the same geometric construction. See proof!
 
+As a matter of fact, by expanding the De Casteljau recursion, one finds that the functions {math}`N_i(t)` are precisely the Bernstein polynomials. Thus, Bernstein polynomials provide the closed-form (non-recursive) expression of the same geometric construction. {ref}`(See proof)<bern-deCast-equiv-proof>`!
+
+(bern-deCast-equiv-proof)=
 :::{prf:proof .simple .dropdown icon=false open=false} Proof that De Casteljau’s construction leads to Bernstein polynomials
 We prove by induction on the recursion level {math}`r` that every intermediate point in De Casteljau’s algorithm can be written as:
 
