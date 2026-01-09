@@ -317,6 +317,116 @@ chart = (
 chart
 ```
 
+Please, see {ref}`(the example below)<cubic-decasteljau-example>`
+
+(cubic-decasteljau-example)=
+:::{prf:example .simple .dropdown icon=false open=false} Example for a Cubic Bézier (De Casteljau Construction)
+
+This example shows every step of evaluating a **cubic Bézier curve** using the **De Casteljau algorithm**.
+A cubic Bézier curve is defined by 4 control points {math}`P_0, P_1, P_2, P_3`.
+
+De Casteljau’s algorithm evaluates the curve by repeated **linear interpolation**.  
+At each step, the intermediate points are defined recursively by:
+
+```{math}
+P_i^{(0)}(t) = P_i,
+\qquad i=0,1,2,3
+```
+
+```{math}
+P_i^{(r)}(t) = (1-t)\,P_i^{(r-1)}(t) + t\,P_{i+1}^{(r-1)}(t),
+\qquad r=1,2,3.
+```
+
+The final point on the curve is:
+
+```{math}
+C(t) = P_0^{(3)}(t).
+```
+
+### Step 1 — First interpolation level {math}`r=1`
+
+We interpolate between consecutive control points:
+
+```{math}
+\begin{cases}
+P_0^{(1)}(t) = (1-t)P_0 + tP_1 \\
+P_1^{(1)}(t) = (1-t)P_1 + tP_2 \\
+P_2^{(1)}(t) = (1-t)P_2 + tP_3
+\end{cases}
+```
+
+
+### Step 2 — Second interpolation level {math}`r=2`
+
+We now interpolate between the new points:
+
+```{math}
+\begin{cases}
+P_0^{(2)}(t) = (1-t)P_0^{(1)}(t) + tP_1^{(1)}(t) \\
+P_1^{(2)}(t) = (1-t)P_1^{(1)}(t) + tP_2^{(1)}(t)
+\end{cases}
+```
+
+### Step 3 — Third interpolation level {math}`r=3`
+
+Finally, we interpolate once more:
+
+```{math}
+P_0^{(3)}(t) = (1-t)P_0^{(2)}(t) + tP_1^{(2)}(t)
+```
+
+This final point is the point on the Bézier curve:
+
+```{math}
+C(t) = P_0^{(3)}(t).
+```
+
+### Step 4 — Numerical evaluation at {math}`t_0=0.3`
+
+Let us evaluate the algorithm at {math}`t_0 = 0.3`.
+
+#### Level {math}`r=1`
+```{math}
+\begin{cases}
+P_0^{(1)}(t_0) = 0.7P_0 + 0.3P_1 \\
+P_1^{(1)}(t_0) = 0.7P_1 + 0.3P_2 \\
+P_2^{(1)}(t_0) = 0.7P_2 + 0.3P_3
+\end{cases}
+```
+
+#### Level {math}`r=2`
+```{math}
+\begin{cases}
+P_0^{(2)}(t_0) = 0.7P_0^{(1)}(t_0) + 0.3P_1^{(1)}(t_0) \\
+P_1^{(2)}(t_0) = 0.7P_1^{(1)}(t_0) + 0.3P_2^{(1)}(t_0)
+\end{cases}
+```
+
+#### Level {math}`r=3`
+```{math}
+P_0^{(3)}(t_0) = 0.7P_0^{(2)}(t_0) + 0.3P_1^{(2)}(t_0)
+```
+
+Thus, the point on the curve is:
+
+```{math}
+C(t_0)=P_0^{(3)}(t_0).
+```
+
+At every step, each intermediate point is computed as:
+
+```{math}
+(1-t)\,A + t\,B
+```
+
+which is an affine combination of two points.  
+Since {math}`t\in[0,1]`, each interpolation stays on the segment joining the two points.  
+As a consequence, the final point {math}`C(t)` lies inside the convex hull of the original control polygon.
+:::
+
+
+
 
 :::{note .simple .dropdown icon=false open=false} Complexity Analysis
 
@@ -350,8 +460,10 @@ De Casteljau’s algorithm quadratic complexity can become a bottleneck for high
 
 :::
 
-Python Implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/book/partA/02_lab_bezier.ipynb)
 
+:::{tip}
+Check out the python implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/code/02_Bezier_DeCasteljau.ipynb)
+:::
 
 ## Bézier Curve with Berstein Polynomials
 
@@ -769,90 +881,81 @@ and the curve point corresponds to the final recursion step:
 C(t)=P_0^{(n)}(t)=\sum_{j=0}^{n}P_jB_j^{n}(t).
 ```
 
-As a matter of fact, by expanding the De Casteljau recursion, one finds that the functions {math}`N_i(t)` are precisely the Bernstein polynomials. Thus, Bernstein polynomials provide the closed-form (non-recursive) expression of the same geometric construction. {ref}`(See proof)<bern-deCast-equiv-proof>`!
+As a matter of fact, by expanding the De Casteljau recursion, one finds that the functions {math}`N_i(t)` are precisely the Bernstein polynomials. Thus, Bernstein polynomials provide the closed-form (non-recursive) expression of the same geometric construction. {ref}`(See Example)<cubic-bezier-example>`!
 
-(bern-deCast-equiv-proof)=
-:::{prf:proof .simple .dropdown icon=false open=false} Proof that De Casteljau’s construction leads to Bernstein polynomials
-We prove by induction on the recursion level {math}`r` that every intermediate point in De Casteljau’s algorithm can be written as:
-
-```{math}
-P_i^{(r)}(t)=\sum_{j=0}^{r} P_{i+j}\,B_j^{r}(t),
-\qquad r=0,\dots,n,\;\; i=0,\dots,n-r.
-```
-
-where {math}`B_j^r(t)` are Bernstein polynomials:
+(cubic-bezier-example)=
+:::{prf:example .simple .dropdown icon=false open=false} Example for a Cubic Bézier
+This example shows every step of evaluating a cubic Bézier curve using the Bernstein basis.
+A cubic Bézier curve is defined by 4 control points {math}`P_0, P_1, P_2, P_3`:
 
 ```{math}
-B_j^r(t)=\binom{r}{j}t^j(1-t)^{r-j}.
+C(t) = \sum_{i=0}^{3} B_i^3(t)\,P_i, \qquad t\in[0,1].
 ```
 
-**Base case ({math}`r=0`).**  
-At recursion level {math}`r=0`, we have {math}`P_i^{(0)}(t)=P_i`. Since {math}`B_0^0(t)=1`, the formula holds:
+The Bernstein polynomials of degree 3 are:
 
 ```{math}
-P_i^{(0)}(t)=P_i=\sum_{j=0}^{0}P_{i+j}B_j^0(t).
+B_i^3(t) = \binom{3}{i} t^i (1-t)^{3-i}, \qquad i=0,1,2,3.
 ```
-
-**Induction step.**  
-Assume the statement holds at level {math}`r-1`. Then, by the De Casteljau recursion:
+Explicitly, the four basis functions are:
 
 ```{math}
-P_i^{(r)}(t)=(1-t)P_i^{(r-1)}(t)+tP_{i+1}^{(r-1)}(t).
+\begin{cases}
+B_0^3(t) = (1-t)^3 \\
+B_1^3(t) = 3t(1-t)^2\\
+B_2^3(t) = 3t^2(1-t)\\
+B_3^3(t) = t^3 
+\end{cases}
+```
+They look like the following:
+```{figure}./imgs/cubic_bernstein.png
+:label: cubic_bernstein
+:alt: Cubic Bernstein polynomials
+:align: center
+
+Cubic Bernstein polynomials
 ```
 
-Using the induction hypothesis:
+Let us evaluate the curve at {math}`t_0 = 0.3`. The Bernstein weights are:
 
 ```{math}
-P_i^{(r-1)}(t)=\sum_{j=0}^{r-1}P_{i+j}B_j^{r-1}(t),
-\qquad
-P_{i+1}^{(r-1)}(t)=\sum_{j=0}^{r-1}P_{i+1+j}B_j^{r-1}(t).
+\begin{cases}
+B_0^3(0.3) = 0.343 \\
+B_1^3(0.3) = 0.441\\
+B_2^3(0.3) = 0.189\\
+B_3^3(0.3) = 0.027 
+\end{cases}
 ```
 
-Substituting:
+Notice that the weights always sum to 1:
 
 ```{math}
-P_i^{(r)}(t)=
-\sum_{j=0}^{r-1}P_{i+j}(1-t)B_j^{r-1}(t)
-+
-\sum_{j=0}^{r-1}P_{i+1+j}\,t\,B_j^{r-1}(t).
+\sum_{i=0}^{3} B_i^3(t) = 1 \quad \forall t.
 ```
-
-Reindex the second sum with {math}`k=j+1` (so {math}`k=1,\dots,r`):
-
+Since {math}`B_i^3(t)\ge 0` on {math}`[0,1]`, the point {math}`C(t)` is an affine combination of the control points, meaning it must lie inside the convex hull of {math}`P_0, P_1, P_2, P_3`.
+So, the Bézier point is obtained by weighting each control point by its Bernstein coefficient::
 ```{math}
-P_i^{(r)}(t)=
-P_i(1-t)B_0^{r-1}(t)
-+
-\sum_{j=1}^{r-1}P_{i+j}\left[(1-t)B_j^{r-1}(t)+tB_{j-1}^{r-1}(t)\right]
-+
-P_{i+r}tB_{r-1}^{r-1}(t).
+C(t) = P_0 B_0^3 + P_1 B_1^3 + P_2 B_2^3 + P_3 B_3^3
 ```
-
-Now recall the Bernstein recursion identity:
-
+Substituting the explicit Bernstein expressions yields the familiar cubic Bézier formula:
 ```{math}
-B_j^r(t)=(1-t)B_j^{r-1}(t)+tB_{j-1}^{r-1}(t).
+C(t) = P_0 (1-t)^3 + P_1 3t(1-t)^2 + P_2 3t^2(1-t) + P_3 t^3
 ```
-
-Therefore, the expression becomes:
-
+Expanding the expression and collecting terms by degree gives the polynomial (power basis) representation:
 ```{math}
-P_i^{(r)}(t)=\sum_{j=0}^{r}P_{i+j}B_j^{r}(t),
+C(t) = [-P_0+3P_1-3P_2+P_3] t^3 + \\ 3[P_0-2P_1+P_2] t^2 + \\ 3[ P_1-P_0] t + \\ P_0
 ```
+This form is mathematically equivalent to the Bernstein form, but it highlights that {math}`C(t)` is a cubic polynomial curve. However, the Bernstein form is generally preferred in geometric modeling because its basis functions are non-negative and sum to one, giving intuitive geometric control. 
 
-which completes the induction.
-
-Finally, at recursion level {math}`r=n` we obtain the curve point:
-
-```{math}
-C(t)=P_0^{(n)}(t)=\sum_{j=0}^{n}P_jB_j^{n}(t).
-```
-
-Hence, the weights produced by De Casteljau’s geometric construction are exactly the Bernstein polynomials.
+With reference to {ref}`(the very same example developed with the De Casteljau approach)<cubic-decasteljau-example>`, although De Casteljau computes {math}`C(t)` recursively through interpolations, the final result is identical to the explicit Bernstein representation. In other words, Bernstein polynomials provide the closed-form weights of the same geometric construction.
 :::
 
 
-Python Implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/code/02_Bernstein.ipynb)
+:::{tip}
+Check out the python implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/code/02_Bezier_Bernstein.ipynb)
+:::
+
+
 
 
 ## Properties
@@ -868,7 +971,7 @@ The key properties are:
 
 
 
-## Matrix Form
+## Bézier Curve in Matrix Form
 
 NB: outer product, denoted with $\otimes$, is defined as follows. Given two vectors $u = (1 \times m)$ and $v = (1 \times n)$:
 
