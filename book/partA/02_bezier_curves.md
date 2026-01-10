@@ -92,18 +92,19 @@ By repeating the procedure for many values of {math}`t`, we obtain the entire **
 
 Paul de Casteljau developed the algorithm at Citroën as a recursive method for evaluating Bézier curves. The method provides an intuitive geometric construction, where the curve is defined by successive (linear) interpolations between control points. Unlike polynomial-based approaches, De Casteljau's algorithm relies solely on linear interpolation, making it numerically stable and robust.
 
-```{prf:algorithm} de Casteljau’s algorithm
+:::{prf:algorithm} de Casteljau’s algorithm
 Given a set of control points {math}`P_0, P_1, \dots, P_n \in \mathbb{E}^d` and a parameter {math}`t \in [0,1]`, define the recursion:
 
 - Initialization: {math}`P_i^{(0)}(t) = P_i, \qquad i = 0,\dots,n`
 - Recursion for {math}`r = 1,\dots,n` and {math}`i = 0,\dots,n-r`:
 
-   $$
-   P_i^{(r)}(t) = (1 - t)\,P_i^{(r-1)}(t) + t\,P_{i+1}^{(r-1)}(t)
-   $$
+```{math}
+:label: intermediate-de-casteljau
+P_i^{(r)}(t) = (1 - t)\,P_i^{(r-1)}(t) + t\,P_{i+1}^{(r-1)}(t)
+```
 
 The point {math}`P_0^{(n)}(t)` is the point corresponding to the parameter value {math}`t` on the Bézier curve of degree {math}`n`.
-```
+:::
 
 By using the slider at the bottom of the following figure you can have a visual demonstration of the de Casteljau’s algorithm for a Bézier curve with 4 control points, hence degree 3 (cubic).
 
@@ -320,33 +321,12 @@ chart
 Please, see {ref}`(the example below)<cubic-decasteljau-example>`
 
 (cubic-decasteljau-example)=
-:::{prf:example .simple .dropdown icon=false open=false} Example for a Cubic Bézier (De Casteljau Construction)
+:::{prf:example .simple .dropdown icon=false open=false} Example for a Cubic Bézier - De Casteljau Construction
 
-This example shows every step of evaluating a **cubic Bézier curve** using the **De Casteljau algorithm**.
-A cubic Bézier curve is defined by 4 control points {math}`P_0, P_1, P_2, P_3`.
+This example shows every step of evaluating a cubic Bézier curve using the De Casteljau algorithm.
+A cubic Bézier curve needs 4 control points {math}`P_0, P_1, P_2, P_3`. De Casteljau’s algorithm evaluates the curve by repeated linear interpolation and, at each step, the intermediate points are defined recursively by the equation [](#intermediate-de-casteljau):
 
-De Casteljau’s algorithm evaluates the curve by repeated **linear interpolation**.  
-At each step, the intermediate points are defined recursively by:
-
-```{math}
-P_i^{(0)}(t) = P_i,
-\qquad i=0,1,2,3
-```
-
-```{math}
-P_i^{(r)}(t) = (1-t)\,P_i^{(r-1)}(t) + t\,P_{i+1}^{(r-1)}(t),
-\qquad r=1,2,3.
-```
-
-The final point on the curve is:
-
-```{math}
-C(t) = P_0^{(3)}(t).
-```
-
-### Step 1 — First interpolation level {math}`r=1`
-
-We interpolate between consecutive control points:
+We interpolate between consecutive control points (recursion depth 1):
 
 ```{math}
 \begin{cases}
@@ -357,9 +337,7 @@ P_2^{(1)}(t) = (1-t)P_2 + tP_3
 ```
 
 
-### Step 2 — Second interpolation level {math}`r=2`
-
-We now interpolate between the new points:
+We now interpolate between the new points (recursion depth 2):
 
 ```{math}
 \begin{cases}
@@ -368,9 +346,7 @@ P_1^{(2)}(t) = (1-t)P_1^{(1)}(t) + tP_2^{(1)}(t)
 \end{cases}
 ```
 
-### Step 3 — Third interpolation level {math}`r=3`
-
-Finally, we interpolate once more:
+Finally, we interpolate once more (recursion depth 3):
 
 ```{math}
 P_0^{(3)}(t) = (1-t)P_0^{(2)}(t) + tP_1^{(2)}(t)
@@ -382,11 +358,8 @@ This final point is the point on the Bézier curve:
 C(t) = P_0^{(3)}(t).
 ```
 
-### Step 4 — Numerical evaluation at {math}`t_0=0.3`
-
 Let us evaluate the algorithm at {math}`t_0 = 0.3`.
 
-#### Level {math}`r=1`
 ```{math}
 \begin{cases}
 P_0^{(1)}(t_0) = 0.7P_0 + 0.3P_1 \\
@@ -395,7 +368,7 @@ P_2^{(1)}(t_0) = 0.7P_2 + 0.3P_3
 \end{cases}
 ```
 
-#### Level {math}`r=2`
+
 ```{math}
 \begin{cases}
 P_0^{(2)}(t_0) = 0.7P_0^{(1)}(t_0) + 0.3P_1^{(1)}(t_0) \\
@@ -403,26 +376,10 @@ P_1^{(2)}(t_0) = 0.7P_1^{(1)}(t_0) + 0.3P_2^{(1)}(t_0)
 \end{cases}
 ```
 
-#### Level {math}`r=3`
-```{math}
-P_0^{(3)}(t_0) = 0.7P_0^{(2)}(t_0) + 0.3P_1^{(2)}(t_0)
-```
-
-Thus, the point on the curve is:
 
 ```{math}
-C(t_0)=P_0^{(3)}(t_0).
+C(t_0) = P_0^{(3)}(t_0) = 0.7P_0^{(2)}(t_0) + 0.3P_1^{(2)}(t_0)
 ```
-
-At every step, each intermediate point is computed as:
-
-```{math}
-(1-t)\,A + t\,B
-```
-
-which is an affine combination of two points.  
-Since {math}`t\in[0,1]`, each interpolation stays on the segment joining the two points.  
-As a consequence, the final point {math}`C(t)` lies inside the convex hull of the original control polygon.
 :::
 
 

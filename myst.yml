@@ -34,12 +34,7 @@ project:
     children:
       - file: book/partA/01_parametric_curves.md
       - file: book/partA/02_bezier_curves.md
-        children:
-         - file: book/partA/02_lab_bezier.ipynb
-         - file: book/partA/01_Bézier_Geometric_Int.ipynb
-      - file: book/partA/03_bspline_curves.md
-        children:
-         - file: book/partA/03_lab_bspline.ipynb      
+      - file: book/partA/03_bspline_curves.md   
 
   - title: Part B — Engineering Workflows (Using Tools)
     children:
