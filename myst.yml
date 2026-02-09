@@ -1,4 +1,4 @@
-# See docs at: https://mystmd.org/guide/frontmatter
+﻿# See docs at: https://mystmd.org/guide/frontmatter
 version: 1
 project:
   id: 6bb13ba1-99fa-4a82-913e-cf0d2b74c98a
@@ -29,14 +29,16 @@ project:
   #        - file: book/partA/01_lab_vectors.ipynb
   #          hidden: true
 
-  - title: Part A — Foundations (Build from Scratch)
+  - title: Part A - Foundations (Build from Scratch)
     hidden: true
     children:
       - file: book/partA/01_parametric_curves.md
       - file: book/partA/02_bezier_curves.md
-      - file: book/partA/03_bspline_curves.md   
+      - file: book/partA/03_bezier_derivative.md
+      - file: book/partA/04_degree_change.md
+      - file: book/partA/XX_bspline_curves.md   
 
-  - title: Part B — Engineering Workflows (Using Tools)
+  - title: Part B - Engineering Workflows (Using Tools)
     children:
       - file: book/partB/07_fitting.md
       - file: book/partB/07_lab_fitting_geomdl.ipynb
@@ -59,4 +61,5 @@ site:
     #hide_myst_branding: true
     hide_toc: false
     numbered_references: true
+
 
