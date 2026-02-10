@@ -57,14 +57,54 @@ The new control points are:
 
 with the convention that {math}`P_{-1}` and {math}`P_{n+1}` do not exist.
 
-:::{prf:proof .simple .dropdown icon=false open=false} Proof of the Degree Elevation Formula
-Starting from the Bézier definition and using {math}`t+(1-t)=1`:
-
+:::{prf:proof .simple .dropdown icon=false open=false} Degree Elevation Formula
+we need to find a curve such that:
 ```{math}
-\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i} (t+(1-t))=\sum_{i=0}^{n+1} \bar{P}_i \binom{n+1}{i} t^i (1-t)^{n+1-i}.
+\sum_{i=0}^{n} P_i B_i^n(t)=\sum_{i=0}^{n+1} \bar{P}_i B_i^{n+1}(t).
 ```
 
-Expanding and shifting the index in the second sum ({math}`j=i+1`):
+Starting from the Bézier definition, expanding the Bernstein definition:
+
+```{math}
+\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i} =\sum_{i=0}^{n+1} \bar{P}_i \binom{n+1}{i} t^i (1-t)^{n+1-i}.
+```
+
+We can muliply the left side of the equation by {math}`t+(1-t)=1`:
+
+```{math}
+\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i} (t+(1-t)) =\sum_{i=0}^{n+1} \bar{P}_i \binom{n+1}{i} t^i (1-t)^{n+1-i}.
+```
+Expanding:
+
+```{math}
+\begin{aligned}
+&\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i} t +\\
+&\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i} (1-t) =\\
+&\sum_{i=0}^{n+1} \bar{P}_i \binom{n+1}{i} t^i (1-t)^{n+1-i}.
+\end{aligned}
+```
+Grouping:
+
+```{math}
+\begin{aligned}
+&\sum_{i=0}^{n} P_i \binom{n}{i} t^{i+1} (1-t)^{n-i} +\\
+&\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i+1} =\\
+&\sum_{i=0}^{n+1} \bar{P}_i \binom{n+1}{i} t^i (1-t)^{n-i+1}.
+\end{aligned}
+```
+To combine terms, we want all sums expressed in the same monomials {math}`t^i(1−t)^{n+1−i}`. The second sum already has it. The first sum has {math}`t^{i+1}(1−t)^{n-i}`. By setting {math}`j=i+1`, them the first sum becomes {math}`t^{j}(1−t)^{n+1-j}`. So after shifting the index:
+
+```{math}
+\begin{aligned}
+&\sum_{j=1}^{n+1} P_{j-1} \binom{n}{j-1} t^{j} (1-t)^{n-j+1} +\\
+&\sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n-i+1} =\\
+&\sum_{i=0}^{n+1} \bar{P}_i \binom{n+1}{i} t^i (1-t)^{n-i+1}.
+\end{aligned}
+```
+
+Grouping:
+
+
 
 ```{math}
 \sum_{i=0}^{n} P_i \binom{n}{i} t^i (1-t)^{n+1-i}+\sum_{j=1}^{n+1} P_{j-1} \binom{n}{j-1} t^j (1-t)^{n+1-j}.
