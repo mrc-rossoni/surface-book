@@ -36,7 +36,7 @@ jupyter:
 
 :::{attention} TODO
 - prepare python example for degree reduction
-- check example 1
+- check example 1@
 :::
 
 Changing the degree of a Bézier curve is crucial in CAD, computer graphics, and numerical analysis. The degree affects flexibility, computational cost, and compatibility with other curves. Two key operations are used in practice:
