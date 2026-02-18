@@ -1,4 +1,45 @@
-# Parametric Curves
+# Motivations
+
+In Computer-Aided Design (CAD), intended here not as mere *“3D modeling”* but as the broader activity of designing supported by computers, we must deal with complex geometries and represent them in a way that is both mathematically rigorous and computationally efficient.
+
+:::{blockquote}
+The decision to use computers in the design process forces the designer to describe all shapes in mathematical terms.
+
+— *Gerald Farin*, Arizona State University
+:::
+
+The use of computers in design therefore requires a formal mathematical framework capable of describing and modifying geometric entities in three-dimensional space.
+In particular, we have:
+
+- a mathematical framework for one-dimensional geometric entities  (curves)
+- a mathematical framework for two-dimensional manifolds embedded in 3D space (surfaces)
+- representation schemes for volumetric objects (solids)
+
+Please notice that the distinction between curves/surfaces (a framework) and solids (schemes) is not accidental {ref}`(See the note)<representation-schemes>`.
+
+(representation-schemes)=
+:::{note  .dropdown icon=false open=false}
+In CAD, curves and surfaces are primarily treated as continuous geometric objects defined through mathematical models, grounded in differential geometry and approximation theory.
+Specifically, a curve is a parametric functions:
+```{math}
+\mathbf{c}(u) : \mathbb{R} \rightarrow \mathbb{R}^3
+```
+a surface is a parametric mappings:
+```{math}
+\mathbf{s}(u,v) : \mathbb{R}^2 \rightarrow \mathbb{R}^3
+```
+A solid, instead, is not simply a higher-dimensional parametric mapping.A volumetric object in CAD must encode: interior versus exterior, topology (faces, edges, vertices), boundary consistency, etc... Therefore, there is no single canonical “parametric solid function” equivalent to those used for curves or surfaces.
+Solids are defined through representation schemes, such as: Boundary Representation (B-Rep), Constructive Solid Geometry (CSG), voxel models, implicit representations,
+half-edge and other topological data structures. These are not merely mathematical descriptions, they are data structures together with rules that encode both geometry and topology.
+
+So, curves and surfaces are primarily analytic and differential entities while solids are primarily geometric–topological entities requiring structured data organization.
+:::
+
+As emphasized above, this perspective is not limited to geometric modeling alone. The mathematical representation of curves, surfaces, and solids plays a fundamental role in many other fields. For instance, in robotics, smooth geometric representations are essential for motion planning, trajectory generation, and kinematic control (see, e.g., {cite}`Maekawa_1999`). Accurate and computationally efficient geometric models directly influence the performance, safety, and feasibility of robotic systems. Similarly, in numerical simulation and engineering analysis, geometric representations directly affect mesh generation, isogeometric analysis ({cite}`Maekawa_1999`), and the accuracy of finite element methods. In these contexts, the quality and smoothness of the geometric model are not merely aesthetic concerns, but directly impact computational performance and solution accuracy.
+
+
+
+## Curves
 
 A curve is the locus of a one-parameter family of points. In computational geometry, a curve can be defined more precisely as a mapping:
 

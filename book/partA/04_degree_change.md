@@ -197,7 +197,7 @@ Therefore, exact degree reduction exists only in exceptional cases, specifically
 {numref}`degree_reduction_example` shows an example of the effect of degree elevation and reduction on the same curve.
 
 
-```{figure}./imgs/degree_reduction.png
+```{figure}../imgs/degree_reduction.png
 :label: degree_reduction_example
 :alt: Degree reduction example with original and reduced Bézier curves
 :align: center
@@ -240,33 +240,65 @@ Substituting the Bézier representations gives
 \,dt.
 ```
 
-For a vector-valued curve {math}`c(t)\in\mathbb{R}^d`, write
-```{math}
-c(t)=(c_1(t),\ldots,c_d(t)),
-```
-so the error splits by components:
-```{math}
-\int_0^1 \|c(t)-\tilde{c}(t)\|^2\,dt
-=\int_0^1\sum_{\ell=1}^d \big(c_\ell(t)-\tilde{c}_\ell(t)\big)^2\,dt.
-```
-Thus the vector problem reduces to {math}`d` independent scalar least-squares problems with the same Bernstein basis.
-
 To derive the linear system, expand the squared error and set its partial derivatives with respect to each unknown control point {math}`\tilde{P}_j` to zero. This yields one equation for each index {math}`j=0,\ldots,m`.
-Introduce the inner products between Bernstein basis functions:
 ```{math}
-M_{jk}=\int_0^1 B_j^m(t)\,B_k^m(t)\,dt,
-\qquad
-b_j=\int_0^1 c(t)\,B_j^m(t)\,dt,
-```
-where {math}`M` is the {math}`(m+1)\times(m+1)` Gram matrix of the basis and {math}`b` is a vector of length {math}`m+1`. The index {math}`k` is the summation index over the basis functions, so for each fixed {math}`j` we sum {math}`k=0,\ldots,m`.
-
-The normal equations for the unknown control points are:
-```{math}
-\sum_{k=0}^{m} M_{jk}\,\tilde{P}_k=b_j,
+:label: linear_sys
+\sum_{k=0}^{m} M_{jk}\,\tilde{P}_k
+=
+b_j,
 \qquad j=0,\ldots,m.
 ```
+Where:
+```{math}
+M_{jk}=\int_0^1 B_j^m(t)\,B_k^m(t)\,dt
+```
+The index {math}`k` is the summation index over the basis functions, so for each fixed {math}`j` we sum {math}`k=0,\ldots,m`. {math}`M_{jk}` has a closed form:
+```{math}
+M_{jk}=
+\frac{\binom{m}{j}\binom{m}{k}}{(2m+1)\binom{2m}{j+k}},
+\qquad j,k=0,\ldots,m.
+```
 
-The matrix {math}`M` is symmetric and positive definite (the Bernstein basis is linearly independent), so the solution is unique. Solving this linear system yields the reduced-degree Bézier curve that minimizes the mean squared distance to the original curve.
+Analyzing the right-hand side of Eq. {numref}`linear_sys`:
+```{math}
+b_j=\int_0^1 c(t)\,B_j^m(t)\,dt = \int_0^1 \left( \sum_{i=0}^{n} P_i\,B_i^n(t)\right)\,B_j^m(t)\,dt
+```
+in the same way as before:
+
+```{math}
+b_j= \sum_{i=0}^{n} P_i\,N_{ji}, \qquad N_{ji} = \int_0^1 B_j^m(t)B_i^n(t)\,dt
+```
+
+where {math}`N_{ji}` has the following closed-form solution:
+```{math}
+N_{ji}=\frac{\binom{m}{j}\binom{n}{i}}{(m+n+1)\binom{m+n}{i+j}}
+```
+
+So the linear system to solve for the unknown control points is:
+```{math}
+[M]\tilde{P}=[N]P
+```
+
+where {math}`M` is the {math}`(m+1)\times(m+1)` Gram matrix of the basis:
+
+```{math}
+M=
+\begin{pmatrix}
+\int_0^1 B_0^m(t)\,B_0^m(t)\,dt & \cdots & \int_0^1 B_0^m(t)\,B_m^m(t)\,dt\\
+\vdots & \ddots & \vdots\\
+\int_0^1 B_m^m(t)\,B_0^m(t)\,dt & \cdots & \int_0^1 B_m^m(t)\,B_m^m(t)\,dt
+\end{pmatrix},
+```
+and {math}`N_{ij}` is a {math}`(m+1) \times (n+1)` matrix:
+```{math}
+N=
+\begin{pmatrix}
+\int_0^1 B_0^m(t)\,B_0^n(t)\,dt & \cdots & \int_0^1 B_0^m(t)\,B_n^n(t)\,dt\\
+\vdots & \ddots & \vdots\\
+\int_0^1 B_m^m(t)\,B_0^n(t)\,dt & \cdots & \int_0^1 B_m^m(t)\,B_n^n(t)\,dt
+\end{pmatrix},
+```
+Being the matrix {math}`M` symmetric and positive definite (the Bernstein basis is linearly independent), so the solution is unique. Solving this linear system (with stable method, e.g. Cholesky, not by inverting [M]) yields the reduced-degree Bézier curve that minimizes the mean (to be precice the {math}`L^2`) squared distance to the original curve.
 :::
 
 
@@ -372,6 +404,7 @@ Great references for degree reduction are {cite}`Watkins_1988` and {cite}`Eck_19
 #### Why degree reduction?
 
 - Reduction of CPs or degree?
+
 
 
 

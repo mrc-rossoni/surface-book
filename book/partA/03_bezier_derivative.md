@@ -188,7 +188,7 @@ D_i=n\big(P_{i+1}-P_i\big),
 
 The {numref}`derivative_bezier_curve` show a cubic Bézier curve, while {numref}`derivative_hodograph` shows the corresponding hodograph. Notice that the distance from the origin to each control point of the hodograph corresponds to the distance between consecutive control points of the Bézier curve, multiplied by 3 (since 3 is the degree of the curve).
 
-```{figure}./imgs/derivative_BezierCurve.png
+```{figure}../imgs/derivative_BezierCurve.png
 :label: derivative_bezier_curve
 :alt: Bezier curve derivative control points
 :align: center
@@ -196,7 +196,7 @@ The {numref}`derivative_bezier_curve` show a cubic Bézier curve, while {numref}
 Bezier curve derivative control points
 ```
 
-```{figure}./imgs/derivative_Hodograph.png
+```{figure}../imgs/derivative_Hodograph.png
 :label: derivative_hodograph
 :alt: Hodograph of the Bezier curve in {numref}`derivative_bezier_curve`
 :align: center

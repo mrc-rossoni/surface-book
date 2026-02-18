@@ -20,6 +20,7 @@ project:
     children:
       - file: book/course-info.md
       - file: book/references.md
+  - file: book/parametric_curves.md
   #- title: Part 0 - Fundamentals
   #  hidden: true
   #  children:
@@ -29,14 +30,18 @@ project:
   #        - file: book/partA/01_lab_vectors.ipynb
   #          hidden: true
 
-  - title: Part A - Foundations (Build from Scratch)
+  - title: Part A - Foundations and Bézier
     hidden: true
     children:
-      - file: book/partA/01_parametric_curves.md
       - file: book/partA/02_bezier_curves.md
       - file: book/partA/03_bezier_derivative.md
-      - file: book/partA/04_degree_change.md
-      - file: book/partA/XX_bspline_curves.md   
+      - file: book/partA/04_degree_change.md 
+      
+  - title: Part B - Splines
+    children:
+      - file: book/05_spline.md 
+      - file: book/partA/XX_bspline_curves.md
+
 
   - title: Part B - Engineering Workflows (Using Tools)
     children:
@@ -45,6 +50,7 @@ project:
       - file: book/partB/08_pointclouds.md
       - file: book/partB/08_lab_pointclouds.ipynb
       - file: book/partB/10_projects.md
+  - file: book/glossary.md
   bibliography:
     - book/references.bib
 

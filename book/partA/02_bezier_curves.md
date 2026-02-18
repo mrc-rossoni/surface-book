@@ -397,7 +397,7 @@ Therefore, the **time complexity is $ O(n^2) $**, meaning that as the number of 
 
 This quadratic complexity is evident in the generated plot (below), where computation time increases non-linearly as control points increase.
 
-```{figure}./imgs/de_casteljau_time.png
+```{figure}../imgs/de_casteljau_time.png
 :label: de_casteljau_time
 :alt: Number of control point vs Computational Time
 :align: center
@@ -405,7 +405,7 @@ This quadratic complexity is evident in the generated plot (below), where comput
 Number of control point vs Computational Time
 ```
 
-```{figure}./imgs/de_casteljau_time_log.png
+```{figure}../imgs/de_casteljau_time_log.png
 :label: de_casteljau_time_log
 :alt: Number of control point vs Computational Time - Log-log scale
 :align: center
@@ -865,7 +865,7 @@ B_3^3(t) = t^3
 \end{cases}
 ```
 They look like the following:
-```{figure}./imgs/cubic_bernstein.png
+```{figure}../imgs/cubic_bernstein.png
 :label: cubic_bernstein
 :alt: Cubic Bernstein polynomials
 :align: center
@@ -1149,4 +1149,5 @@ of evaluating high-degree polynomials.
 1. Show that {math}`\sum_{i=0}^{n} B_i^n(u) = 1`.
 2. Prove endpoint interpolation.
 3. Implement De Casteljau and compare its output with the Bernstein evaluation for increasing degree.
+
 
