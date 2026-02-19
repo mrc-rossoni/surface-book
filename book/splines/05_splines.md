@@ -206,7 +206,7 @@ The second derivative scales with the square of the knot interval.
 
 
 This scaling has important geometric, numerical, and modeling implications. First of all, derivatives (in global parameter space) amplify as the knot span shrinks. As such, even if the local polynomial {math}`s_i(t)` is perfectly well-behaved, the curve in global parameter {math}`u`
-can have large slope, large curvature and increased oscillatory behavior. This is why clustered knots can create regions of high curvature. Changing knot spacing affects curvature distribution even if control points are unchanged.
+can have large slope, large curvature and increased oscillatory behavior. This is why clustered knots can create regions of high curvature. Changing knot spacing affects curvature distribution even if control points are unchanged. We well dive into the details of this in the [Chapter 3.3](ch-knots-vectors).
 
 :::{tip} FEM Analogy
 In classical FEM, shape functions are local per element.
@@ -215,6 +215,28 @@ Since second derivatives enter the stiffness matrix, this {math}`h^-2` scaling c
 
 In spline-based discretizations, although basis functions overlap multiple knot spans, the derivative scaling {math}`\Delta_i^-2` is structurally identical to the finite element {math}`h^-2` scaling. Each knot span behaves as a parametric element whose size directly controls the magnitude of derivatives and, consequently, the conditioning of stiffness operators.
 :::
+
+## Derivatives of order k
+Proceeding inductively, we obtain the general formula:
+
+```{math}
+:label: eq_kth_derivative_scaling
+\frac{d^k s(u)}{du^k}
+=
+\frac{1}{\Delta_i^{\,k}}
+\frac{d^k s_i(t)}{dt^k},
+\qquad
+u \in [u_i, u_{i+1}].
+```
+
+The {math}`k-th` derivative in global parameter space scales with the
+{math}`k-th` power of the inverse knot span:
+```{math}
+\frac{d^k}{du^k}
+\sim
+\Delta_i^{-k}.
+```
+Thus, in general, {math}`k-th` derivatives scale like {math}`\Delta_i^{-k}`.  Further implication of this will be explained in the [Chapter 3.3](ch-knots-vectors).
 
 ## Conclusion
 

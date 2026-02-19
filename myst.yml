@@ -34,7 +34,7 @@ project:
       - file: book/splines/EffectofKnotSpacing.md
   - file: book/b-spline/index.md
     children:
-      - file: book/b-spline/XX_bspline_curves.md
+      - file: book/b-spline/bspline_curves.md
 
 
   - title: Engineering Workflows (Using Tools)
