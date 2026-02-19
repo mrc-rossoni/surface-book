@@ -15,6 +15,7 @@ project:
   numbering:
     title: true
     headings: true   # optional; remove if you only want chapter/page numbering
+    depth: 1
 
   # MyST uses toc.yml for navigation
   toc:

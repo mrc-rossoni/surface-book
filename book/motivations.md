@@ -1,8 +1,5 @@
 ---
 title: Motivations
-numbering:
-  title: true
-  headings: true
 ---
 (ch-motivations)=
 # Motivations

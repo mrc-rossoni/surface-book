@@ -1,9 +1,6 @@
 ---
 
 title: Definitions
-numbering:
-  title: true
-  headings: true
 
 jupyter:
 
