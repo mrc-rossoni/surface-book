@@ -1,4 +1,4 @@
-﻿# See docs at: https://mystmd.org/guide/frontmatter
+# See docs at: https://mystmd.org/guide/frontmatter
 version: 1
 project:
   id: 6bb13ba1-99fa-4a82-913e-cf0d2b74c98a
@@ -12,38 +12,31 @@ project:
       
   copyright: "2026"
   github: https://github.com/mrc-rossoni/surface-book
+  numbering:
+    title: true
+    headings: true   # optional; remove if you only want chapter/page numbering
 
   # MyST uses toc.yml for navigation
   toc:
   - file: book/intro.md
-  - title: Course Information
+  - file: book/motivations.md
+  - file: book/bezier/index.md 
     children:
-      - file: book/course-info.md
-      - file: book/references.md
-  - file: book/parametric_curves.md
-  #- title: Part 0 - Fundamentals
-  #  hidden: true
-  #  children:
-  #    - file: book/partA/01_vectors_frames.md
-  #      hidden: true
-  #      children:
-  #        - file: book/partA/01_lab_vectors.ipynb
-  #          hidden: true
-
-  - title: Part A - Foundations and Bézier
-    hidden: true
-    children:
-      - file: book/partA/02_bezier_curves.md
-      - file: book/partA/03_bezier_derivative.md
-      - file: book/partA/04_degree_change.md 
+      - file: book/bezier/02_bezier_curves.md
+      - file: book/bezier/03_bezier_derivative.md
+      - file: book/bezier/04_degree_change.md 
       
-  - title: Part B - Splines
+  - file: book/splines/index.md 
     children:
-      - file: book/05_spline.md 
-      - file: book/partA/XX_bspline_curves.md
+      - file: book/splines/05_splines.md
+      - file: book/splines/continuity.md
+      - file: book/splines/EffectofKnotSpacing.md
+  - file: book/b-spline/index.md
+    children:
+      - file: book/b-spline/XX_bspline_curves.md
 
 
-  - title: Part B - Engineering Workflows (Using Tools)
+  - title: Engineering Workflows (Using Tools)
     children:
       - file: book/partB/07_fitting.md
       - file: book/partB/07_lab_fitting_geomdl.ipynb
@@ -67,5 +60,6 @@ site:
     #hide_myst_branding: true
     hide_toc: false
     numbered_references: true
+
 
 

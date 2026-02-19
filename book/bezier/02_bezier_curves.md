@@ -1,5 +1,10 @@
 ---
 
+title: Definitions
+numbering:
+  title: true
+  headings: true
+
 jupyter:
 
   jupytext:
@@ -32,17 +37,17 @@ jupyter:
 
 ---
 
-# Bézier Curves
+# Definitions
 Bézier curves are a foundational building block for surface modeling in engineering CAD systems.
 Although industrial models typically rely on B-splines and NURBS, Bézier curves remain the simplest case
-where the geometry is entirely controlled by a finite set of points and a well-defined basis. They are used for local shape editing (via control points), smooth profile definition (aerodynamics, industrial design), construction of surface patches and as a **conceptual entry point to B-splines**.
+where the geometry is entirely controlled by a finite set of points and a well-defined basis. They are used for local shape editing (via control points), smooth profile definition (aerodynamics, industrial design), construction of surface patches and as a conceptual entry point to B-splines.
 
-As we discussed in the last part of the Chapter (REF to CH), all the matter of CAD boils down to chosing a "proper" basis function to represent the curve (and then surfances) in the 3D. THe process is basically done by lying down some requirements and looking "out there" to find the optimal "functional space" whose funtions satisfies those requirement. 
+As we discussed in the last part of [Chapter 1](ch-motivations), all the matter of CAD boils down to chosing a "proper" basis function to represent the curve (and then surfances) in the 3D. THe process is basically done by lying down some requirements and looking "out there" to find the optimal "functional space" whose funtions satisfies those requirement. 
 
 As per the Bézier curves, this functional space is the one defined by the so called "Bernstein basis". We'll dive into it in one of the following chapter. As a matter of fact, from an engineering perspective, the "geometrical interpretaion" should, in my opinion, have the priority. 
 
 
-## Geometric Interpretation: the "de Casteljau's" Algorithm
+# Geometric Interpretation: the "de Casteljau's" Algorithm
 
 Let’s start with a simple and intuitive idea. Given two points in the 2D plane, {math}`P_0` and {math}`P_1`, what is the simplest way to connect them? The answer is trivial: a straight line.
 
@@ -926,44 +931,8 @@ The key properties are:
 6. Invariant under affine parameter transformation: i.e.: not bounded to the interval [0,1].
 
 
-
-
 ## Bézier Curve in Matrix Form
-
-NB: outer product, denoted with $\otimes$, is defined as follows. Given two vectors $u = (1 \times m)$ and $v = (1 \times n)$:
-
-$$
-\mathbf {u} =
-\begin{bmatrix} 
-u_{1} \\ 
-u_{2} \\ 
-\vdots \\ 
-u_{m} 
-\end{bmatrix}, 
-\quad 
-\mathbf {v} =
-\begin{bmatrix} 
-v_{1} \\ 
-v_{2} \\ 
-\vdots \\ 
-v_{n} 
-\end{bmatrix}
-$$
-
-The outer product, $\mathbf {u} \otimes \mathbf {v}$, is a $m \times n$ matrix:
-
-$$
-\mathbf {u} \otimes \mathbf {v} =\mathbf {A} =
-\begin{bmatrix} 
-u_{1}v_{1} & u_{1}v_{2} & \dots & u_{1}v_{n} \\ 
-u_{2}v_{1} & u_{2}v_{2} & \dots & u_{2}v_{n} \\ 
-\vdots & \vdots & \ddots & \vdots \\ 
-u_{m}v_{1} & u_{m}v_{2} & \dots & u_{m}v_{n} 
-\end{bmatrix}
-$$
-
-## Bézier Curve in Matrix Form
-Using the outer product notation, we rewrite the Bézier curve equation as:
+Using the {ref}`(outer product)<outerProd>` notation, we rewrite the Bézier curve equation as:
 
 $$
 \mathbf{P}(t) =
@@ -1030,6 +999,40 @@ $$
 
 This representation generalizes Bézier curves for any number of control points, allowing for computational efficiency using matrix multiplication.
 
+(outerProd)=
+:::{note  .dropdown icon=false open=false} Outer Product
+The outer product, denoted with $\otimes$, is defined as follows. Given two vectors $u = (1 \times m)$ and $v = (1 \times n)$:
+
+$$
+\mathbf {u} =
+\begin{bmatrix} 
+u_{1} \\ 
+u_{2} \\ 
+\vdots \\ 
+u_{m} 
+\end{bmatrix}, 
+\quad 
+\mathbf {v} =
+\begin{bmatrix} 
+v_{1} \\ 
+v_{2} \\ 
+\vdots \\ 
+v_{n} 
+\end{bmatrix}
+$$
+
+The outer product, $\mathbf {u} \otimes \mathbf {v}$, is a $m \times n$ matrix:
+
+$$
+\mathbf {u} \otimes \mathbf {v} =\mathbf {A} =
+\begin{bmatrix} 
+u_{1}v_{1} & u_{1}v_{2} & \dots & u_{1}v_{n} \\ 
+u_{2}v_{1} & u_{2}v_{2} & \dots & u_{2}v_{n} \\ 
+\vdots & \vdots & \ddots & \vdots \\ 
+u_{m}v_{1} & u_{m}v_{2} & \dots & u_{m}v_{n} 
+\end{bmatrix}
+$$
+:::
 
 #### Quadratic Bézier Curve
 
@@ -1145,9 +1148,5 @@ of evaluating high-degree polynomials.
 
 ---
 
-## Exercises
-1. Show that {math}`\sum_{i=0}^{n} B_i^n(u) = 1`.
-2. Prove endpoint interpolation.
-3. Implement De Casteljau and compare its output with the Bernstein evaluation for increasing degree.
 
 

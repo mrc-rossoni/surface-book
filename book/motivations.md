@@ -1,3 +1,10 @@
+---
+title: Motivations
+numbering:
+  title: true
+  headings: true
+---
+(ch-motivations)=
 # Motivations
 
 In Computer-Aided Design (CAD), intended here not as mere *“3D modeling”* but as the broader activity of designing supported by computers, we must deal with complex geometries and represent them in a way that is both mathematically rigorous and computationally efficient.
@@ -37,41 +44,32 @@ So, curves and surfaces are primarily analytic and differential entities while s
 
 As emphasized above, this perspective is not limited to geometric modeling alone. The mathematical representation of curves, surfaces, and solids plays a fundamental role in many other fields. For instance, in robotics, smooth geometric representations are essential for motion planning, trajectory generation, and kinematic control (see, e.g., {cite}`Maekawa_1999`). Accurate and computationally efficient geometric models directly influence the performance, safety, and feasibility of robotic systems. Similarly, in numerical simulation and engineering analysis, geometric representations directly affect mesh generation, isogeometric analysis ({cite}`Maekawa_1999`), and the accuracy of finite element methods. In these contexts, the quality and smoothness of the geometric model are not merely aesthetic concerns, but directly impact computational performance and solution accuracy.
 
+All the applications mentioned above ultimately depend on one fundamental operation: the ability to represent and manipulate smooth geometric entities in a computationally robust way. Let's consider a curve...
 
-
-## Curves
+## Representation of Curves
 
 A curve is the locus of a one-parameter family of points. In computational geometry, a curve can be defined more precisely as a mapping:
 
 ```{math}
-\mathbf{C}: \mathbb{R} \rightarrow \mathbb{R}^3
+\mathbf{C}(u): \mathbb{R} \rightarrow \mathbb{R}^3
 ```
 
 meaning that for every parameter value {math}`u`, the curve returns a point in 3D space.
 
-Different mathematical representations exist (intrinsic, explicit, implicit, parametric), but for CAD and computational applications we need a framework that is:
+Different mathematical representations exist (intrinsic, explicit, implicit, parametric), but for CAD and computational applications a mathematical framework must:
 
-- **independent of the chosen coordinate system**, so that shape does not change when the reference frame changes;
-- **computable**, i.e. easy to evaluate, differentiate, and integrate numerically;
-- **flexible**, to represent planar and non-planar geometries;
-- **controllable**, so that designers can modify the shape locally and predictably.
+- be independent of the chosen coordinate system, so that the shape does not change when the reference frame changes;
+- be computable, i.e., easy to evaluate, differentiate, and integrate numerically;
+- be controllable, allowing designers to modify the shape locally and predictably.
 
-Explicit and implicit equations are useful in mathematics, but they are not the best foundation for geometric modeling systems.
 
-## Explicit Equations
-
-In the plane, the explicit equation of a curve takes the general form:
+In the plane, the explicit equation of a curve is typically written in the form:
 
 ```{math}
 y = f(x)
 ```
 
-This form has important limitations:
-
-- there is only one {math}`y` value for each {math}`x`;
-- it cannot represent closed curves or multi-valued geometries.
-
-## Implicit Equations
+In this representation, the curve is described as the graph of a function, where each value of {math}`x` is associated with exactly one value of {math}`y`.
 
 An implicit curve in the plane is defined as:
 
@@ -79,7 +77,9 @@ An implicit curve in the plane is defined as:
 f(x,y)=0
 ```
 
-Example: a unit circle in the {math}`XY` plane:
+:::{note .simple .dropdown icon=false open=false} Implicit equation of a circle
+
+A unit circle in the {math}`XY` plane is represented implicitly as:
 
 ```{math}
 f(x,y)=x^2+y^2-1=0
@@ -92,23 +92,33 @@ f(x,y)=x^2+y^2-1=0
 
 circle lying in the XY plane
 ```
+:::
 
-Implicit equations avoid some limitations of explicit ones, but they still present major issues for CAD:
+## Why Explicit and Implicit Forms Are Not Ideal for Modeling
 
-- they are **axis-dependent**;
-- they are harder to sample parametrically. As they do not provide a natural parameterization, generating points on the curve (needed for tessellation, meshing, and rendering) typically requires numerical procedures such as root finding or marching algorithms.
+Starting from the explicit representation, while mathematically simple and intuitive, this formulation has significant limitations:
+
+- for each value of {math}`x`, there can be only one corresponding value of {math}`y`;
+- it cannot represent closed curves (e.g., circles) without splitting them into multiple functions;
+- it cannot naturally describe multi-valued geometries or shapes with vertical tangents.
+
+For these reasons, explicit equations are generally too restrictive to serve as a general framework for geometric modeling in CAD systems.
+
+Implicit equations avoid some of the limitations of explicit ones, but they still present major issues for CAD:
+
+- they are axis-dependent;
+- they are harder to sample parametrically. Since they do not provide a natural parameterization, generating points on the curve (needed for tessellation, meshing, and rendering) typically requires numerical procedures such as root-finding or marching algorithms;
 - geometric properties (tangents, curvature) are not naturally expressed;
-- extending to bounded, trimmed, or non-planar curves is non-trivial.
+- extending them to bounded, trimmed, or non-planar curves is non-trivial.
 
-## Why explicit and implicit forms are not ideal for modeling
+Both explicit and implicit equations do not provide the most suitable foundation for geometric modeling systems. 
 
-Both explicit and implicit representations are **axis-dependent**.
-
-- The shapes of most objects are intrinsically independent of any coordinate system. We need a modeling framework where the choice of a CSYS does not affect the shape.
-- Any solid (closed object) will have tangent lines or tangent planes that may become parallel to principal axes of the chosen CSYS. This can lead to ill-defined mathematical properties or numerical instabilities.
+- The shapes of most objects are intrinsically independent of any coordinate system. However, both representations are defined with respect to a specific Coordinate System (CSYS), and their mathematical expression changes when the CSYS changes. We need a modeling framework in which the choice of CSYS does not affect the shape.
+- Any solid (closed object) will have tangent lines or tangent planes that may become parallel to the principal axes of the chosen CSYS. This can lead to ill-defined mathematical properties or numerical instabilities.
 - Curves and surfaces are often non-planar and bounded, making them difficult to represent robustly using explicit and implicit equations.
 
 For programming and computability, other forms are preferable.
+
 
 ## Parametric Equations of Curves
 
@@ -131,8 +141,10 @@ z = z(u)
 \end{cases}
 ```
 
-Example: a helix
+(HelixExample)=
+::::{prf:example .dropdown icon=false open=false} Helix
 
+The parametric representation of an helix is given by:
 ```{math}
 \begin{cases}
 x=\sin(u) \\
@@ -141,20 +153,26 @@ z=u
 \end{cases}
 ```
 
-:::{figure}
-:label: Helix
-:alt: Helix
-:align: center
-:class: grid grid-cols-2 items-end gap-4 
+{numref}`Helix3D` represent the helix in the cartesian space while the {numref}`HelixPar` shows the equations in according to the parameter {math}`u`.
 
-(Helix3D)=
-![Helix in 3D Space](./imgs/3D_Curve_Helix.png)
+::::{grid} 2
+:gutter: 3
 
-(HelixPar)=
-![Helix in Parameters Space](./imgs/3D_Curve_Helix_Parameter_Space.png)
+:::{figure} ./imgs/3D_Curve_Helix.png
+:label: Helix3D
+:alt: Helix in 3D space
 
-Helix in the 3D and Parametric Space
+Helix in 3D space
 :::
+
+:::{figure} ./imgs/3D_Curve_Helix_Parameter_Space.png
+:label: HelixPar
+:alt: Helix in parameter space
+
+Helix coordinate functions as functions of the parameter {math}`u`
+:::
+
+::::
 
 Parametric representations are the standard approach in CAD and computational geometry because:
 
@@ -163,11 +181,11 @@ Parametric representations are the standard approach in CAD and computational ge
 - they enable **efficient evaluation and differentiation** (tangent, curvature, arc length, etc.);
 - they provide a consistent foundation for curves, surfaces, and solid modeling schemes.
 
-## The key question: how do we build parametric curves in a general way?
+### The key question: how do we build parametric curves in a general way?
 
 A parametric curve is only as useful as the functions used to define {math}`x(u), y(u), z(u)`.
 
-In the helix example, we selected:
+In the {ref}`helix example<HelixExample>`, the function chosen to describe the curve are:
 
 ```{math}
 \{\sin(u), \cos(u), u\}
@@ -179,9 +197,9 @@ In engineering design we often need to solve a more general problem:
 
 > Given a set of points, find a smooth curve interpolating or approximating the data.
 
-To address this, we need a **generic and controllable way** to construct parametric curves.
+To address this, we need a general and controllable way to construct parametric curves.
 
-## From “functions” to a modeling framework: basis functions
+### From “functions” to a modeling framework: basis functions
 
 Instead of defining {math}`x(u), y(u), z(u)` independently, we build the curve as a linear combination of **basis functions**:
 
@@ -193,7 +211,8 @@ where:
 
 - {math}`\mathbf{P}_i \in \mathbb{R}^3` are **control points**{ref}`(see note)<control-point-note>`; 
 - {math}`N_i(u)` are **basis functions**{ref}`(see note)<basis-function-note>` that determine the shape, continuity, and smoothness;
-- the curve becomes controllable by editing {math}`\mathbf{P}_i`.
+
+The curve becomes controllable by editing {math}`\mathbf{P}_i`.
 
 (control-point-note)=
 :::{note .simple .dropdown icon=false open=false} Control Point
@@ -201,9 +220,9 @@ where:
 
 If we need the curve to pass through data points, we do that via:
 
-- **interpolation**: solve for control points such that {math}`C(u_k)=Q_k`
-- **approximation / fitting**: least squares
-- **constraint-based modeling**: force certain curve points to match
+- interpolation: solve for control points such that {math}`C(u_k)=Q_k`
+- approximation / fitting: least squares
+- constraint-based modeling: force certain curve points to match
 
 So even when we start from points on the curve, we still convert them into control points.
 :::
@@ -215,7 +234,7 @@ A set of basis functions $\{Ni(u)\}$ is a collection of functions that span a sp
 
 
 
-This is the fundamental idea behind curves and surface representation in CAD. The choice of basis functions is what turns parametric equations into a powerful and general modeling system. Basis functions span a function space: they define what shapes are possible and what properties the curve will have. Different choices of basis functions produce different curve families:
+This is the fundamental idea behind curves and surface representation in CAD and, generally, in computational design. The choice of basis functions is what turns parametric equations into a powerful and general modeling system. Basis functions span a function space: they define what shapes are possible and what properties the curve will have. Different choices of basis functions produce different curve families:
 
 - power basis $\rightarrow$ polynomials in $u$
 - Bernstein basis $\rightarrow$ Bézier curves

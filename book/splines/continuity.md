@@ -31,143 +31,7 @@ jupyter:
 
 ---
 
-# Splines
-A physical spline is a slender, flexible strip (traditionally made of wood or metal) used by draftsmen to draw smooth curves. The strip is held in place at selected points by weighted supports, often called *dogs*. Due to its elastic properties, it bends into a smooth and visually pleasing shape.
-
-Mathematically, the curve formed by such a device can be modeled as a piecewise polynomial function with a prescribed degree of smoothness at the junction points. The first explicit mathematical use of the term *spline* in this context appears in {cite}`Schoenberg_1946a`, where spline functions of order {math}`k` are formally introduced. In modern terminology:
-> A spline curve is a function that is defined piecewise by polynomials curve 
-
-As such, a single Bézier is not a spline.
-
-
-
-
-
-
-
-Given knots
-
-```{math}
-u_0 < u_1 < \cdots < u_L,
-```
-
-a spline curve of degree {math}`n` in {math}`\mathbb{E}^d` is a function {math}`s:[u_0,u_L]\to\mathbb{E}^d` such that each restriction {math}`s|_{[u_i,u_{i+1}]}` is polynomial of degree at most {math}`n`.
-At interior knots {math}`u_i`, one usually enforces continuity constraints ({math}`C^r` or {math}`G^r`) so adjacent pieces join smoothly.
-
-This piecewise structure gives local control: moving data on one segment primarily affects nearby geometry, while continuity conditions preserve global smoothness.
-
-# Spline Curves in Bézier Form
-
-A single Bézier curve can model many shapes, but **complex curves typically require a prohibitively high degree** to capture local detail.  
-In CAD and geometric modeling, the standard solution is to **join several low-degree Bézier segments** end-to-end. A curve defined piecewise by polynomial segments is called a **spline**.
-
-## Definitions, terminology, and conventions
-
-Let
-
-```{math}
-u_0 < u_1 < \dots < u_L
-```
-
-be a strictly increasing sequence of real numbers. Each value {math}`u_i` is called a **knot** (in parameter space). The ordered list is the **knot vector**.
-
-A (parametric) **spline curve** {math}`s` is a continuous map that is *polynomial on each knot span*:
-
-```{math}
-s : [u_0,u_L] \to \mathbb{E}^d,
-\qquad
-s\big|_{[u_i,u_{i+1}]} \text{ is a polynomial curve segment.}
-```
-
-For Bézier-form splines, we represent each segment on a **local parameter** {math}`t\in[0,1]` defined by
-
-```{math}
-:label: eq_local_param
-t = \frac{u-u_i}{u_{i+1}-u_i} = \frac{u-u_i}{\Delta_i},
-\qquad
-\Delta_i := u_{i+1}-u_i.
-```
-
-We denote the {math}`i`-th Bézier segment by {math}`s_i`, so that for {math}`u\in[u_i,u_{i+1}]`:
-
-```{math}
-s(u) = s_i(t).
-```
-
-The point {math}`s(u_i)=s_i(0)=s_{i-1}(1)` is the **joint** (or **junction point**) in Euclidean space.
-
-## Piecewise Bézier representation
-
-Assume each segment is a Bézier curve of degree {math}`n`:
-
-```{math}
-:label: eq_piecewise_bezier
-s_i(t)=\sum_{k=0}^{n} P_{i,k}\,B_k^{n}(t),
-\qquad t\in[0,1],
-```
-
-where {math}`\{P_{i,k}\}` are the control points of segment {math}`i` and {math}`B_k^n` are the Bernstein polynomials.
-
-```{figure}./imgs/spline_composite_even.png
-:label: fig_composite_bezier
-:alt: Composite Bézier curve and Bernstein basis functions per segment
-:align: center
-
-A composite (piecewise) Bézier curve. The bottom plot shows how each segment has its *own* Bernstein basis on its local parameter; conceptually you can “stitch” segments along the global curve.
-```
-
-:::{prf:remark .simple}
-A **piecewise Bézier polygon** is obtained by concatenating the control polygons of all segments. It provides an intuitive, local-control handle on the spline shape.
-:::
-
-## Global vs local derivatives
-
-Because each segment is parameterized by a **local** variable {math}`t`, derivatives with respect to the **global** parameter {math}`u` must use the chain rule.
-
-```{math}
-\frac{d s(u)}{d u} = \frac{d s_i(t)}{d t}\,\frac{d t}{d u},
-\qquad
-\frac{d t}{d u} = \frac{1}{\Delta_i}.
-```
-
-Hence:
-
-```{math}
-:label: eq_first_derivative_scaling
-\boxed{
-\frac{d s(u)}{d u} = \frac{1}{\Delta_i}\,\frac{d s_i(t)}{d t}
-}
-```
-
-Similarly, differentiating again:
-
-```{math}
-:label: eq_second_derivative_scaling
-\boxed{
-\frac{d^2 s(u)}{d u^2} = \frac{1}{\Delta_i^2}\,\frac{d^2 s_i(t)}{d t^2}
-}
-```
-
-:::{prf:proof .simple .dropdown icon=false} Second-derivative scaling
-On a fixed span {math}`[u_i,u_{i+1}]`, {math}`\Delta_i` is constant and {math}`t=(u-u_i)/\Delta_i`.  
-From Eq. {numref}`eq_first_derivative_scaling`:
-
-```{math}
-\frac{ds}{du} = \frac{1}{\Delta_i}\frac{ds_i}{dt}.
-```
-
-Differentiate again w.r.t. {math}`u`:
-
-```{math}
-\frac{d^2 s}{du^2}
-=\frac{1}{\Delta_i}\frac{d}{du}\left(\frac{ds_i}{dt}\right)
-=\frac{1}{\Delta_i}\frac{d}{dt}\left(\frac{ds_i}{dt}\right)\frac{dt}{du}
-=\frac{1}{\Delta_i}\frac{d^2 s_i}{dt^2}\cdot\frac{1}{\Delta_i}
-=\frac{1}{\Delta_i^2}\frac{d^2 s_i}{dt^2}.
-```
-:::
-
-## Continuity at joints
+# Continuity at joints
 
 Let the joint between segments {math}`s_{i-1}` and {math}`s_i` correspond to {math}`u=u_i`, i.e. to {math}`t=1` on the left segment and {math}`t=0` on the right segment.
 
@@ -246,7 +110,7 @@ Uneven knots (non-uniform {math}`\Delta_i`) do **not** change the *geometry* of 
 - **Curvature plots** and “fairness” assessments,
 - Numerical behavior in downstream algorithms that depend on {math}`ds/du`, {math}`d^2s/du^2`, etc.
 
-```{figure}./imgs/spline_derivatives_even.png
+```{figure}../imgs/spline_derivatives_even.png
 :label: fig_derivatives_even
 :alt: Derivatives with even knots
 :align: center
@@ -254,7 +118,7 @@ Uneven knots (non-uniform {math}`\Delta_i`) do **not** change the *geometry* of 
 Even knot spacing: local speed {math}`\|ds_i/dt\|` and global speed {math}`\|ds/du\|` differ only by a constant factor per span, and transitions are easier to keep smooth.
 ```
 
-```{figure}./imgs/spline_derivatives_uneven.png
+```{figure}../imgs/spline_derivatives_uneven.png
 :label: fig_derivatives_uneven
 :alt: Derivatives with uneven knots
 :align: center
@@ -333,5 +197,3 @@ knots = [0, 1, 2, 4]
 plot_derivatives(control_points, knots)
 ```
 :::
-
-
