@@ -1,36 +1,10 @@
 ---
 
 title: Definitions
-
-jupyter:
-
-  jupytext:
-
-    text_representation:
-
-      extension: .md
-
-      format_name: markdown
-
-  kernelspec:
-
-    display_name: Python 3 (ipykernel)
-
-    language: python
-
-    name: python3
-
-  language_info:
-
-    name: python
-
-    nbconvert_exporter: python
-
-    pygments_lexer: ipython3
-
-  short_title: images
-
-  title: images and figures
+kernelspec:
+  name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 
 ---
 
@@ -39,7 +13,7 @@ Bézier curves are a foundational building block for surface modeling in enginee
 Although industrial models typically rely on B-splines and NURBS, Bézier curves remain the simplest case
 where the geometry is entirely controlled by a finite set of points and a well-defined basis. They are used for local shape editing (via control points), smooth profile definition (aerodynamics, industrial design), construction of surface patches and as a conceptual entry point to B-splines.
 
-As we discussed in the last part of [Chapter 1](ch-motivations), all the matter of CAD boils down to chosing a "proper" basis function to represent the curve (and then surfances) in the 3D. THe process is basically done by lying down some requirements and looking "out there" to find the optimal "functional space" whose funtions satisfies those requirement. 
+As we discussed in the last part of [Chapter 1](#ch-motivations), all the matter of CAD boils down to chosing a "proper" basis function to represent the curve (and then surfances) in the 3D. THe process is basically done by lying down some requirements and looking "out there" to find the optimal "functional space" whose funtions satisfies those requirement. 
 
 As per the Bézier curves, this functional space is the one defined by the so called "Bernstein basis". We'll dive into it in one of the following chapter. As a matter of fact, from an engineering perspective, the "geometrical interpretaion" should, in my opinion, have the priority. 
 
@@ -323,7 +297,7 @@ chart
 Please, see {ref}`(the example below)<cubic-decasteljau-example>`
 
 (cubic-decasteljau-example)=
-:::{prf:example .simple .dropdown icon=false open=false} Example for a Cubic Bézier - De Casteljau Construction
+:::{prf:example .simple .dropdown} Example for a Cubic Bézier - De Casteljau Construction
 
 This example shows every step of evaluating a cubic Bézier curve using the De Casteljau algorithm.
 A cubic Bézier curve needs 4 control points {math}`P_0, P_1, P_2, P_3`. De Casteljau’s algorithm evaluates the curve by repeated linear interpolation and, at each step, the intermediate points are defined recursively by the equation [](#intermediate-de-casteljau):
@@ -444,7 +418,7 @@ where {math}`P_i` are the vertices of the control polygon, and {math}`N_i(t)` ar
 
 A family of polynomials satisfying these requirements is given by the **Bernstein polynomials**.
 
-:::{prf:definition .simple icon=false open=true}
+:::{prf:definition .simple}
 The Bernstein polynomial of degree {math}`n` and index {math}`i` is defined as:
 
 ```{math}
@@ -843,7 +817,7 @@ C(t)=P_0^{(n)}(t)=\sum_{j=0}^{n}P_jB_j^{n}(t).
 As a matter of fact, by expanding the De Casteljau recursion, one finds that the functions {math}`N_i(t)` are precisely the Bernstein polynomials. Thus, Bernstein polynomials provide the closed-form (non-recursive) expression of the same geometric construction. {ref}`(See Example)<cubic-bezier-example>`!
 
 (cubic-bezier-example)=
-:::{prf:example .simple .dropdown icon=false open=false} Example for a Cubic Bézier
+:::{prf:example .simple .dropdown} Example for a Cubic Bézier
 This example shows every step of evaluating a cubic Bézier curve using the Bernstein basis.
 A cubic Bézier curve is defined by 4 control points {math}`P_0, P_1, P_2, P_3`:
 
@@ -1031,7 +1005,7 @@ u_{m}v_{1} & u_{m}v_{2} & \dots & u_{m}v_{n}
 $$
 :::
 
-#### Quadratic Bézier Curve
+### Quadratic Bézier Curve
 
 For a quadratic Bézier curve defined by three control points $\mathbf{P}_0, \mathbf{P}_1, \mathbf{P}_2$, the parametric equation is:
 
@@ -1074,7 +1048,7 @@ t^2
 \end{bmatrix}
 $$
 
-#### Cubic Bézier Curve
+### Cubic Bézier Curve
 
 For a cubic Bézier curve defined by four control points $\mathbf{P}_0, \mathbf{P}_1, \mathbf{P}_2, \mathbf{P}_3$, the parametric equation is:
 
@@ -1125,25 +1099,13 @@ This matrix representation allows efficient computation of Bézier curves using 
 
 
 # Conclusions
-We can evaluate {math}`C(u)` in two main ways:
+We can evaluate {math}`C(u)` in two main ways: direct Bernstein-basis evaluation and De Casteljau’s algorithm. Direct Bernstein evaluation is straightforward, but it can become numerically unstable for high-degree curves. De Casteljau’s algorithm is based on repeated linear interpolation and is generally more stable. But why stability matters?
 
-1. **Direct Bernstein basis evaluation**  
-   Simple, but can be numerically unstable for high degree.
-
-2. **De Casteljau algorithm**  
-   More stable; based on repeated linear interpolation.
+In engineering workflows, Bézier curves often appear indirectly, for example within surface patches, during representation-conversion steps, or during fitting procedures. For this reason, De Casteljau’s-like algorithms are usually preferred in practice because they reduce the numerical issues associated with evaluating high-degree polynomials.
 
 
-## 6. Engineering note: why stability matters
-In engineering workflows, Bézier curves may appear indirectly:
-- as part of surface patches,
-- as internal representation during conversion steps,
-- or during fitting.
 
-The De Casteljau algorithm is preferred in practice because it avoids the numerical issues
-of evaluating high-degree polynomials.
 
----
 
 
 

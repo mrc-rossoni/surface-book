@@ -1,34 +1,4 @@
 ---
-jupyter:
-
-  jupytext:
-
-    text_representation:
-
-      extension: .md
-
-      format_name: markdown
-
-  kernelspec:
-
-    display_name: Python 3 (ipykernel)
-
-    language: python
-
-    name: python3
-
-  language_info:
-
-    name: python
-
-    nbconvert_exporter: python
-
-    pygments_lexer: ipython3
-
-  short_title: splines
-
-  title: spline curves
-
 ---
 
 # Continuity at joints
@@ -187,6 +157,7 @@ C^k \;\Rightarrow\; G^k,
 ```
 
 but the converse is generally not true. Intutively, as {math}`G^k` allows speeding up or slowing down at the joint while {math}`C^k` does not, {math}`G^k \;\Rightarrow\; C^k` when there is no speed change at the junction. In other words, {math}`G^k \;\Rightarrow\; C^k` iff the reparameterization does not distort derivative magnitudes.
+
 
 
 

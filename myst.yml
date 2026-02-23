@@ -23,13 +23,13 @@ project:
   - file: book/motivations.md
   - file: book/bezier/index.md 
     children:
-      - file: book/bezier/02_bezier_curves.md
-      - file: book/bezier/03_bezier_derivative.md
-      - file: book/bezier/04_degree_change.md 
+      - file: book/bezier/bezier_curves.md
+      - file: book/bezier/bezier_derivative.md
+      - file: book/bezier/degree_change.md 
       
   - file: book/splines/index.md 
     children:
-      - file: book/splines/05_splines.md
+      - file: book/splines/splines.md
       - file: book/splines/continuity.md
       - file: book/splines/EffectofKnotSpacing.md
   - file: book/b-spline/index.md
@@ -61,6 +61,9 @@ site:
     #hide_myst_branding: true
     hide_toc: false
     numbered_references: true
+
+
+
 
 
 

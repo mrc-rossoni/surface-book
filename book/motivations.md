@@ -39,7 +39,7 @@ half-edge and other topological data structures. These are not merely mathematic
 So, curves and surfaces are primarily analytic and differential entities while solids are primarily geometric–topological entities requiring structured data organization.
 :::
 
-As emphasized above, this perspective is not limited to geometric modeling alone. The mathematical representation of curves, surfaces, and solids plays a fundamental role in many other fields. For instance, in robotics, smooth geometric representations are essential for motion planning, trajectory generation, and kinematic control (see, e.g., {cite}`Maekawa_1999`). Accurate and computationally efficient geometric models directly influence the performance, safety, and feasibility of robotic systems. Similarly, in numerical simulation and engineering analysis, geometric representations directly affect mesh generation, isogeometric analysis ({cite}`Maekawa_1999`), and the accuracy of finite element methods. In these contexts, the quality and smoothness of the geometric model are not merely aesthetic concerns, but directly impact computational performance and solution accuracy.
+As emphasized above, this perspective is not limited to geometric modeling alone. The mathematical representation of curves, surfaces, and solids plays a fundamental role in many other fields. For instance, in robotics, smooth geometric representations are essential for motion planning, trajectory generation, and kinematic control (see, e.g., {cite}`Maekawa_1999`). Accurate and computationally efficient geometric models directly influence the performance, safety, and feasibility of robotic systems. Similarly, in numerical simulation and engineering analysis, geometric representations directly affect mesh generation, isogeometric analysis ({cite}`Hughes_2005`), and the accuracy of finite element methods. In these contexts, the quality and smoothness of the geometric model are not merely aesthetic concerns, but directly impact computational performance and solution accuracy.
 
 All the applications mentioned above ultimately depend on one fundamental operation: the ability to represent and manipulate smooth geometric entities in a computationally robust way. Let's consider a curve...
 
@@ -139,7 +139,7 @@ z = z(u)
 ```
 
 (HelixExample)=
-::::{prf:example .dropdown icon=false open=false} Helix
+::::{prf:example .dropdown} Helix
 
 The parametric representation of an helix is given by:
 ```{math}
@@ -153,8 +153,6 @@ z=u
 {numref}`Helix3D` represent the helix in the cartesian space while the {numref}`HelixPar` shows the equations in according to the parameter {math}`u`.
 
 ::::{grid} 2
-:gutter: 3
-
 :::{figure} ./imgs/3D_Curve_Helix.png
 :label: Helix3D
 :alt: Helix in 3D space
@@ -239,3 +237,5 @@ This is the fundamental idea behind curves and surface representation in CAD and
 - rational B-spline basis $\rightarrow$ NURBS
 
 The choice of basis functions determines key geometric and computational features, such as degree of the curve, continuity, local vs global control (local support or not), smoothness and fairness and the ability to represent special shapes (e.g., conics). So basis functions are not just “mathematical convenience”: they are the core design decision behind a modeling system.
+
+

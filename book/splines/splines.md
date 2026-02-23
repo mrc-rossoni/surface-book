@@ -1,36 +1,6 @@
 ---
 title: Splines
 
-jupyter:
-
-  jupytext:
-
-    text_representation:
-
-      extension: .md
-
-      format_name: markdown
-
-  kernelspec:
-
-    display_name: Python 3 (ipykernel)
-
-    language: python
-
-    name: python3
-
-  language_info:
-
-    name: python
-
-    nbconvert_exporter: python
-
-    pygments_lexer: ipython3
-
-  short_title: splines
-
-  title: spline curves
-
 ---
 
 # Splines
@@ -206,7 +176,7 @@ The second derivative scales with the square of the knot interval.
 
 
 This scaling has important geometric, numerical, and modeling implications. First of all, derivatives (in global parameter space) amplify as the knot span shrinks. As such, even if the local polynomial {math}`s_i(t)` is perfectly well-behaved, the curve in global parameter {math}`u`
-can have large slope, large curvature and increased oscillatory behavior. This is why clustered knots can create regions of high curvature. Changing knot spacing affects curvature distribution even if control points are unchanged. We well dive into the details of this in the [Chapter 3.3](ch-knots-vectors).
+can have large slope, large curvature and increased oscillatory behavior. This is why clustered knots can create regions of high curvature. Changing knot spacing affects curvature distribution even if control points are unchanged. We well dive into the details of this in the [Chapter 3.3](#ch-knots-vectors).
 
 :::{tip} FEM Analogy
 In classical FEM, shape functions are local per element.
@@ -236,8 +206,9 @@ The {math}`k-th` derivative in global parameter space scales with the
 \sim
 \Delta_i^{-k}.
 ```
-Thus, in general, {math}`k-th` derivatives scale like {math}`\Delta_i^{-k}`.  Further implication of this will be explained in the [Chapter 3.3](ch-knots-vectors).
+Thus, in general, {math}`k-th` derivatives scale like {math}`\Delta_i^{-k}`.  Further implication of this will be explained in the [Chapter 3.3](#ch-knots-vectors).
 
 ## Conclusion
 
 We have defined a spline as a piecewise polynomial curve in which each segment is itself a parametric curve (for example, a Bézier curve or another polynomial form). We now need to establish how these segments are connected, and how to control the degree of smoothness across the knots. This requirement is expressed mathematically through the concept of continuity, which will be the subject of the next chapter.
+

@@ -1,38 +1,13 @@
 ---
-
-jupyter:
-
-  jupytext:
-
-    text_representation:
-
-      extension: .md
-
-      format_name: markdown
-
-  kernelspec:
-
-    display_name: Python 3 (ipykernel)
-
-    language: python
-
-    name: python3
-
-  language_info:
-
-    name: python
-
-    nbconvert_exporter: python
-
-    pygments_lexer: ipython3
-
-  short_title: images
-
-  title: images and figures
+title: Bézier Derivatives
+kernelspec:
+  name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 
 ---
 
-# Bézier Curve Derivatives
+
 Bézier curves admit clean, geometric derivative formulas. This is one of the reasons they are so useful in CAD: tangents and higher-order shape constraints are easy to compute and directly linked to the control polygon.
 
 We start from the Bernstein form:
@@ -52,7 +27,7 @@ The derivative of the Bernstein basis satisfies:
 \qquad i=0,\dots,n,
 ```
 with the convention {math}`B_{-1}^{n-1}=B_{n}^{n-1}=0`.
-:::{prf:proof .simple .dropdown icon=false open=false} Proof of the Derivative Formula for Bernstein Polynomials
+:::{prf:proof .simple .dropdown} Proof of the Derivative Formula for Bernstein Polynomials
 We want to prove:
 
 ```{math}
@@ -121,7 +96,7 @@ Substituting into the curve definition and collecting terms gives:
 C'(t)=n\sum_{i=0}^{n-1}\big(P_{i+1}-P_i\big)\,B_i^{n-1}(t).
 ```
 
-:::{prf:proof .simple .dropdown icon=false open=false} Proof of the Bézier Curve Derivative Formula
+:::{prf:proof .simple .dropdown} Proof of the Bézier Curve Derivative Formula
 Substituting Eq. {eq}`bernstein-derivative` into the Bézier definition:
 
 ```{math}
@@ -177,7 +152,7 @@ So the derivative is again a Bézier curve of degree {math}`n-1`. The control po
 
 As the coefficient of this new curve are not scalars but vectors, the derivative curve does not belong to {math}`E^3` but in {math}`R^3`. For this reasone, this derivative curve is usually called hodograph. 
 
-:::{prf:definition .simple icon=false open=true}
+:::{prf:definition .simple}
 The **hodograph** of a Bézier curve {math}`C(t)` is its derivative {math}`C'(t)`. The hodograph is itself a Bézier curve with control points:
 
 ```{math}
@@ -255,3 +230,10 @@ C'(0)=n(P_1-P_0), \qquad C'(1)=n(P_n-P_{n-1}).
 ```
 
 This means that for any order {math}`k`, the Bézier curve derivative remains a Bézier curve but of reduced degree {math}`n - k`, with new computed control points. These expressions are widely used to impose tangent constraints in curve design.
+
+# Conclusions
+The derivative of a Bézier curve preserves the Bézier structure: differentiating a degree-{math}`n` curve produces a degree-{math}`n-1` Bézier curve. Its control points are scaled forward differences of the original control polygon, which gives a direct geometric interpretation of tangent behavior. This derivative curve, called the hodograph, is practical in CAD because it makes tangent evaluation immediate and links smoothness constraints to simple control-point operations. 
+
+The same logic extends to higher-order derivatives through forward differences, showing that the {math}`k`-th derivative depends on {math}`k+1` consecutive control points and therefore remains locally controlled. At the endpoints, derivatives depend only on nearby control points, which is why Bézier curves are convenient for imposing boundary constraints in design workflows. 
+
+

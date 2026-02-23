@@ -5,95 +5,29 @@ numbering:
   headings: false
 ---
 
+Welcome to the course notebook for Surface Modeling for Engineering Applications.
 
-Welcome to the course book for **Surface Modeling for Engineering Applications (Master Level)**.
+Creating digital models of complex products is now a core engineering skill. As design and manufacturing technologies advance, geometry becomes more complex and requires robust modeling methods.
 
-This book has two goals:
+This course introduces 3D surface modeling techniques and their role in product development. It covers the mathematical foundations of parametric curves and surfaces (splines, Bézier, and NURBS) and combines theory with hands-on CAD practice. Students will model both aesthetic and technical shapes, such as ship hulls, airfoils, and blades, and will learn how to prepare these models for numerical analysis.
 
-1. **Foundations (Part A):** build the fundamental algorithms (curves, surfaces, continuity, curvature) *from scratch*.
-2. **Engineering workflows (Part B):** use professional-grade libraries and pipelines to solve realistic problems (fitting, point clouds, fairness, manufacturability constraints).
-
----
-
-## How to use this book
-This book is designed as a hybrid between textbook and lab manual:
-
-- **Theory chapters** explain concepts, derivations, and engineering implications.
-- **Lab notebooks** contain runnable code and practical experiments.
-
-You can read everything online and run notebooks directly in **Google Colab** with one click.
-
----
-
-## Running the lab notebooks
-Each notebook starts with a setup cell that:
-1. clones the GitHub repository
-2. installs dependencies
-3. makes the `code/` folder importable
-
-Always run that cell first.
-
----
-
-
-# Course Information
-
-The capability to conceive and generate digital representations of their products and projects is an essential skill for engineers. As the design and manufacturing technologies advance, the shape of the products evolves as well, becoming more and more complex. 
-
-This course aims at giving students the ability to make 3D models of complex shapes through surface modeling approaches and understand the role of this technology in different phases of the product development process. The course will present an introduction to 3D surface modeling techniques and their applications in Engineering. The mathematical foundation of parametric curves and surfaces (splines, Bezier, NURBS) will be briefly presented. Beyond the theory, the course will adopt a hands-on approach by allowing students to practice with modern computer-aided design tools. Different 3D models of both aesthetic surfaces and technical surfaces (e.g. ship hull, airfoils, blades, etc.) will be made and discussed. Finally, the capability to prepare those models for numerical analysis will be also discussed.
+By the end of the course, students will understand how CAD and 3D modeling tools work under the hood, including geometric representation, surface construction, parameterization, and numerical robustness. They will be able to choose appropriate modeling strategies for different applications, balancing fidelity, robustness, and computational cost. They will also understand the broader value of surface models beyond visualization, including simulation (CAE/CFD), manufacturing preparation (CAM), quality workflows, robotics, offline programming, and digital twins.
+Because 3D models are used throughout engineering workflows, students need both conceptual foundations and practical experience. The course combines theory and Python-based examples with applied modeling exercises so students can understand real limitations and produce higher-quality models for downstream use.
 
 ## Topics
-The course covers the following topics:
-
-- Introduction to surface modeling: the role in the product development process and comparison with solid modeling.
-
-- Mathematical foundation of parametric curves and surfaces. The Bézier, Spline, Coons and NURBS both in their rational and non-rational forms will be introduced. The concept of geometric continuity will be discussed.
-
-- Surface modeling approaches: Freeform, patch and subdivision surface.
-
-- Algorithmic and generative approaches to surface generation.
-
-- Reverse Engineering: from point clouds/meshes to surface models.
-
-- Implications of surface topology and geometry for numerical analysis and mesh preparation.
-
-- Strategies to approach the modeling of complex objects with applications and examples to specific domains, such as product design, marine, wind, airfoils and mold.
-
-The course contents will be delivered through lectures and laboratory activities using a 3D modeling software. 
+The course covers the role of surface modeling in the product development process and its comparison with solid modeling; the mathematical foundations of parametric curves and surfaces, including Bézier, splines, Coons, and NURBS in both rational and non-rational forms; geometric continuity; freeform, patch, and subdivision approaches; algorithmic and generative strategies for surface generation; reverse engineering from point clouds and meshes to surface models; and the implications of topology and geometry for numerical analysis and mesh preparation. It also presents strategies for modeling complex objects, with examples from product design, marine applications, wind energy, airfoils, and mold design. Course content is delivered through lectures and laboratory activities using 3D modeling software.
 
 ## Prerequisites
-Nice-to-have:
-- basic calculus
-- Programming fundamentals
-- Basics of feature-based modeling
+Nice-to-have prerequisites are basic calculus, programming fundamentals, and basic feature-based modeling skills.
 
-## Learning outcomes
-By the end of the course, students will:
+# References and Textbooks
+This notebook is inspired by the following books:
 
-- understand how CAD tools and 3D modeling software work “under the hood” (geometric representations, surface construction, parameterization, and numerical robustness) and use this knowledge to make more informed modeling decisions throughout the product development process;
-
-- understand why surface modeling is not only a way to create 3D shapes for visualization, but also a key enabler for downstream phases of the PDP, including simulation (CAE/CFD), manufacturing preparation (CAM), tolerance and quality workflows, robotics/offline programming, and digital twins;
-
-- recognize current and emerging industrial and research applications of surface modeling, and evaluate which modeling approaches (and levels of geometric fidelity) are appropriate for a specific use case, balancing accuracy, robustness, and computational cost.
-
-*Rationale:* Since 3D models are ubiquitous—from visualization to simulation—understanding the mathematical and computational principles behind modeling tools helps students drive the development process with greater awareness. The hands-on exercises are designed to let students “try at least once” to build a complex surface-based model, so they can experience the practical challenges and limitations of modeling systems and learn how to create higher-quality digital representations suitable for downstream phases of the product development process. The theoretical part, supported by applied Python implementations, reinforces this understanding and connects surface modeling to broader domains such as robotics and simulation.
-
-# References
-
-## Recommended textbooks
-- Piegl, L., Tiller, W. *The NURBS Book.*
-- Farin, G. *Curves and Surfaces for CAGD.*
-- Rogers, D. *An Introduction to NURBS.*
-- Do Carmo, M. *Differential Geometry of Curves and Surfaces* (selected sections)
-
-## Engineering and CAD perspective
-- Hoschek, J., Lasser, D. *Fundamentals of Computer Aided Geometric Design.*
+- Piegl, Les., & Tiller, Wayne. (1997). The NURBS Book (2nd ed. 1997.). Springer Berlin Heidelberg [BiblioPolimi - Available Online](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1nvvje2/alma9956912908776)
+- Farin, G. E. (2002). Curves and surfaces for CAGD : a practical guide. In Curves and surfaces for CAGD : a practical guide (5. ed). Morgan Kaufmann Publishers - [BiblioPolimi](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1nvvje2/alma99599427208776)
+- Mortenson, M. E. (2006). Geometric modeling (3. ed). Industrial press. [BiblioPolimi](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1a3em6c/alma99633148108776)
 
 
-## 
-- 10.14658/PUPJ-DRNA-2024-3-9
 
-
-## Assessment
-- Multiple Choice Test on Theoretical Concepts (individual) - Accounting for 30\%
-- Final project (team or individual) - Accounting for 70\%
+## How to use this book
+This book is designed as a hybrid between textbook and lab manual. Theory chapters explain concepts, derivations, and engineering implications, while lab notebooks contain runnable code and practical experiments. Whenever available, you can read everything online and run notebooks directly in Google Colab with one click.
