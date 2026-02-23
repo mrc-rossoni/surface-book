@@ -210,10 +210,10 @@ can have large slope, large curvature and increased oscillatory behavior. This i
 
 :::{tip} FEM Analogy
 In classical FEM, shape functions are local per element.
-The scaling of second derivatives is {math}`h^-2` because the transformation from a reference element to a physical element of size {math}`h` involves involves a Jacobian that scales like {math}`h^1`, so its inverse is {math}`h^-1`. Through the chain rule, this inverse Jacobian is applied twice when computing second-order spatial derivatives, leading to the {math}`h^-2` factor.
-Since second derivatives enter the stiffness matrix, this {math}`h^-2` scaling causes stiffness contributions to increase as elements become smaller. As a consequence small elements lead to larger stiffness entries, the system becomes increasingly ill-conditioned and mesh refinement increases the matrix condition number.
+The scaling of second derivatives is {math}`h^{-2}` because the transformation from a reference element to a physical element of size {math}`h` involves involves a Jacobian that scales like {math}`h^1`, so its inverse is {math}`h^{-1}`. Through the chain rule, this inverse Jacobian is applied twice when computing second-order spatial derivatives, leading to the {math}`h^{-2}` factor.
+Since second derivatives enter the stiffness matrix, this {math}`h^{-2}` scaling causes stiffness contributions to increase as elements become smaller. As a consequence small elements lead to larger stiffness entries, the system becomes increasingly ill-conditioned and mesh refinement increases the matrix condition number.
 
-In spline-based discretizations, although basis functions overlap multiple knot spans, the derivative scaling {math}`\Delta_i^-2` is structurally identical to the finite element {math}`h^-2` scaling. Each knot span behaves as a parametric element whose size directly controls the magnitude of derivatives and, consequently, the conditioning of stiffness operators.
+In spline-based discretizations, although basis functions overlap multiple knot spans, the derivative scaling {math}`\Delta_i^{-2}` is structurally identical to the finite element {math}`h^{-2}` scaling. Each knot span behaves as a parametric element whose size directly controls the magnitude of derivatives and, consequently, the conditioning of stiffness operators.
 :::
 
 ## Derivatives of order k
