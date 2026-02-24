@@ -90,6 +90,7 @@ Substituting back,
 which completes the proof.
 :::
 
+
 Substituting into the curve definition and collecting terms gives:
 
 ```{math}
@@ -150,7 +151,7 @@ which is a Bézier curve of degree {math}`n-1`. This completes the proof.
 
 So the derivative is again a Bézier curve of degree {math}`n-1`. The control points of the derivative curve are computed as differences of consecutive control points, scaled by {math}`n`. In other words, {math}`P_{i+1} - P_i` is the direction vector from {math}`P_i` to {math}`P_{i+1}` and  {math}`n(P_{i+1} - P_i)` is a vector {math}`n`- times longer than the direction vector. 
 
-As the coefficient of this new curve are not scalars but vectors, the derivative curve does not belong to {math}`E^3` but in {math}`R^3`. For this reasone, this derivative curve is usually called hodograph. 
+As the coefficient of this new curve are not scalars but vectors, the derivative curve does not belong to {math}`E^3` but in {math}`R^3`. For this reason, this derivative curve is usually called hodograph. 
 
 :::{prf:definition .simple}
 The **hodograph** of a Bézier curve {math}`C(t)` is its derivative {math}`C'(t)`. The hodograph is itself a Bézier curve with control points:
@@ -176,7 +177,7 @@ Bezier curve derivative control points
 :alt: Hodograph of the Bezier curve in {numref}`derivative_bezier_curve`
 :align: center
 
-Hodograph of the Bezier curve in {numref}`derivative_bezier_curve`
+Hodograph of the Bezier curve in {numref}`derivative_bezier_curve`.
 ```
 
 
@@ -184,7 +185,141 @@ Once the control points are known, the control points of its derivative curve ca
 
 
 ## Higher-Order Derivatives
-Let's define the iterated forward difference operator:
+
+By recursively applying Eq.{numref}`bernstein-derivative`, the {math}`k-th` derivatives {math}`\frac{d^k}{dt^k} B^n_i(t)` are obtained. 
+The interactive chart below visualizes the Bernstein basis functions {math}`B^n_i(t)` and their corresponding {math}`k-th` derivatives. Use the sliders to change the polynomial degree {math}`n`, the derivative order {math}`k`, and (optionally) isolate a single basis index {math}`i` (set {math}`i=-1` to show all basis functions). Note that for {math}`k>n` the derivative is identically zero.
+
+```{code-cell} ipython3
+:tags: [remove-input]
+
+import numpy as np
+import pandas as pd
+import altair as alt
+from math import comb
+
+# ------------------------------------------------------------
+# Bernstein basis + k-th derivative (general, stable-ish)
+# ------------------------------------------------------------
+def bernstein_poly(n, i, t):
+    """
+    Bernstein polynomial B_i^n(t).
+    Supports scalar or numpy array t.
+    Returns zeros if i is outside [0,n].
+    """
+    t = np.asarray(t, dtype=float)
+    if (i < 0) or (i > n):
+        return np.zeros_like(t)
+    return comb(n, i) * (t**i) * ((1.0 - t)**(n - i))
+
+def bernstein_derivative(i, n, k, t):
+    """
+    k-th derivative of Bernstein polynomial B_i^n(t).
+
+    Uses:
+      d^k/dt^k B_i^n(t) = (n!/(n-k)!) * sum_{j=0..k} (-1)^{k-j} * C(k,j) * B_{i-j}^{n-k}(t)
+    with out-of-range Bernstein terms treated as 0.
+    """
+    t = np.asarray(t, dtype=float)
+    if k == 0:
+        return bernstein_poly(n, i, t)
+    if k > n:
+        return np.zeros_like(t)
+
+    coeff = np.prod([n - j for j in range(k)])  # n*(n-1)*...*(n-k+1) = n!/(n-k)!
+    s = np.zeros_like(t)
+    for j in range(k + 1):
+        s += ((-1.0)**(k - j)) * comb(k, j) * bernstein_poly(n - k, i - j, t)
+    return coeff * s
+
+# ------------------------------------------------------------
+# Precompute data for interactive plotting
+# ------------------------------------------------------------
+N_MAX = 8           # max polynomial degree available in the slider
+num_t = 500
+
+t = np.linspace(1e-6, 1.0 - 1e-6, num_t)
+
+rows = []
+for n in range(1, N_MAX + 1):
+    for k in range(n + 1):
+        for i in range(n + 1):
+            y = bernstein_derivative(i, n, k, t)
+            for tt, yy in zip(t, y):
+                rows.append({
+                    "t": float(tt),
+                    "value": float(yy),
+                    "n": int(n),
+                    "i": int(i),
+                    "k": int(k),
+                    "series": f"B_{n},{i}" + (f"^({k})" if k else "")
+                })
+
+df = pd.DataFrame(rows)
+data = alt.Data(values=df.to_dict(orient="records"))
+
+# ------------------------------------------------------------
+# Sliders: degree n, derivative order k, and optional single i
+# ------------------------------------------------------------
+n_slider = alt.binding_range(min=1, max=N_MAX, step=1, name="Degree n: ")
+n_param = alt.param(value=5, bind=n_slider)
+
+k_slider = alt.binding_range(min=0, max=N_MAX, step=1, name="Derivative order k: ")
+k_param = alt.param(value=0, bind=k_slider)
+
+# Choose i: -1 means "all i"
+i_slider = alt.binding_range(min=-1, max=N_MAX, step=1, name="Index i (-1 = all): ")
+i_param = alt.param(value=-1, bind=i_slider)
+
+# ------------------------------------------------------------
+# Chart
+# ------------------------------------------------------------
+base = alt.Chart(data).transform_filter(
+    alt.datum.n == n_param
+).transform_filter(
+    alt.datum.k == k_param
+).transform_filter(
+    (i_param == -1) | (alt.datum.i == i_param)
+)
+
+main = base.mark_line().encode(
+    x=alt.X("t:Q", title="t"),
+    y=alt.Y("value:Q", title="Value"),
+    color=alt.Color("series:N", title="Polynomial")
+).properties(
+    width=760,
+    height=420
+)
+
+header = alt.Chart(alt.Data(values=[{"dummy": 1}])).mark_text(
+    align="center",
+    baseline="middle",
+    fontSize=13,
+    color="#334155"
+).transform_calculate(
+    label="'Bernstein Polynomials and k-th Derivatives | n = ' + "
+          + n_param.name
+          + " + ' | k = ' + "
+          + k_param.name
+).encode(
+    text="label:N"
+).properties(
+    width=760,
+    height=28
+)
+
+chart = alt.vconcat(
+    header,
+    main,
+    spacing=6,
+    center=True
+).add_params(
+    n_param, k_param, i_param
+)
+
+chart
+```
+
+For the curve, let's define the iterated forward difference operator:
 ```{math}
 \Delta^k P_i=
 \sum_{j=0}^{k}(-1)^{k-j}\binom{k}{j}P_{i+j}.
