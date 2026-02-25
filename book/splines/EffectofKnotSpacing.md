@@ -19,19 +19,9 @@ This lead to a foundamental observation:
 
 > the continuity of a spline is not determined solely by the arrangement of control points. It also depends on the parameterization induced by the knot vector.
 
+In other words, the *continuity class*  of a curve is not a geometric property that is intrinsically linked to the shape of the curve, it is a result of the parametrization (i.e. the choice of the knot vector).
+
 Therefore, understanding the role of knot vectors is essential because they do more than subdivide the parameter domain: they control the analytical structure through which the spline is expressed.
-
-## Polynomial Degree Limitation
-Assume each spline segment is a polynomial of degree {math}`n` in the local parameter {math}`t`. Differentiation reduces the polynomial degree by one at each step. Consequently,
-```{math}
-\frac{d^k s(u)}{du^k} = 0
-\qquad
-\text{for } k > n.
-```
-
-That is, a degree-{math}`n` spline segment cannot have nonzero derivatives of order higher than {math}`n`.
-
-This statement is local: it holds on each knot span individually. Across knots, derivatives of order {math}`k \le n` may still be discontinuous if the continuity conditions are not satisfied.
 
 ## Continuity Across Knots
 
@@ -96,20 +86,7 @@ The parameterization induced by the knot vector directly influences derivative m
 :::
 
 
-## Parameterization Effects: Local vs Global Speed
-
-So far, we have analyzed how knot spacing affects derivatives and continuity from an analytical point of view. We now interpret these results geometrically.
-
-Recalling that, on each knot span {math}`[u_i,u_{i+1}]`, the local parameter is defined by
-
-```{math}
-t = \frac{u-u_i}{\Delta_i},
-\qquad
-\Delta_i = u_{i+1}-u_i.
-```
-This relation is a linear rescaling of the parameter. The geometric image of each Bézier segment remains unchanged, but the rate at which the curve is traversed with respect to the global parameter {math}`u` depends on {math}`\Delta_i`.
-
-### Global Speed
+## Physical Interpretation - Global Speed
 
 The global speed of the curve is
 ```{math}
@@ -118,16 +95,14 @@ The global speed of the curve is
 \frac{1}{\Delta_i}
 \left\| \frac{ds_i}{dt} \right\|.
 ```
-Thus, if {math}`\Delta_i` is large, the factor {math}`1/\Delta_i` is small, and the curve is traversed more slowly with respect to {math}`u`.If {math}`\Delta_i` is small, the factor {math}`1/\Delta_i` is large, and the curve is traversed more rapidly. In other words, the knot vector stretches or compresses the parameter axis.
-The geometry of the curve does not change, but its parameterization does (this sentence is true for Bézier segment only).
+Thus, if {math}`\Delta_i` is large, the factor {math}`1/\Delta_i` is small, and the curve is traversed more slowly with respect to {math}`u`.If {math}`\Delta_i` is small, the factor {math}`1/\Delta_i` is large, and the curve is traversed more rapidly. In other words, the knot vector stretches or compresses the parameter axis. The geometric shape of the curve remains unchanged, but its parameterization changes. This statement is strictly true for a Bézier segment. For more general curves, such as B-splines where the knot vector is embedded in the definition of the basis functions, modifying the knot vector can also change the geometry of the curve.
 
-### Interpretation When {math}`u` Represents Time
-If the global parameter {math}`u` represents time, then {math}`\|ds/du\|` is the physical velocity along the curve. Smaller knot spans correspond to faster motion.
-Larger knot spans correspond to slower motion.
+In the same way, if the global parameter {math}`u` represents time, then {math}`\|ds/du\|` is the physical velocity along the curve. Smaller knot spans correspond to faster motion. Larger knot spans correspond to slower motion. 
+
 Thus, uneven knot spacing induces non-uniform motion along the curve, even when the geometric segments are unchanged.
 
 
-## Curvature and Fairness
+## Geometrical Interpretation - Curvature and Fairness
 
 Curvature is one of the most important geometric quantities used to assess the quality and smoothness of a curve.
 
@@ -173,26 +148,6 @@ Changing the knot span does not change the geometric curvature of the curve.
 Although curvature magnitude is invariant, the way curvature is distributed with respect to the global parameter does change. If a knot span {math}`\Delta_i` is small, the same geometric variation is compressed into a smaller portion of the parameter domain. Curvature appears to vary more rapidly as a function of {math}`u`.
 The contrary if {math}`\Delta_i` is large. Thus, while the curve itself is unchanged, its curvature plot with respect to {math}`u` may look very different.
 
-
-
-## Effects of Uneven Knot Spacing
-
-So far, we have analyzed knot spacing under the assumption of a uniform knot vector. In practice, however, non-uniform knot distributions are common.  
-We now consider a spline defined piecewise on knot spans {math}`[u_i,u_{i+1}]` with non-uniform intervals {math}`\Delta_i`.
-
-For any spline that is defined piecewise via a linear parameter transformation on each span, the scaling effect given by {math}`\Delta_i` holds independently of the specific polynomial representation (Bézier, B-spline, etc.), as it follows solely from the linear change of parameter on each span.
-
-So: What Uneven Knots Affect?
-
-Non-uniform knot spacing influences:
-
-- Derivative magnitudes, since global derivatives scale as {math}`\Delta_i`. Smaller spans amplify higher derivatives.
-- Continuity conditions, because global {math}`C^k `continuity requires consistent scaling of adjacent spans.
-- Parameter speed, as the curve is traversed more rapidly on small spans and more slowly on large spans.
-- Curvature plots, since although geometric curvature is invariant under linear reparameterization, its distribution with respect to the global parameter may appear distorted.
-- Numerical conditioning, because higher derivatives enter many numerical operators. Since they scale with {math}`\Delta_i^{-k}`, highly non-uniform knot vectors may degrade conditioning.
-
-
 ### Fairness Interpretation
 
 In design practice, a curve is often considered fair when its curvature plot exhibits few oscillations, smooth transitions, and limited variation in curvature extrema.
@@ -224,7 +179,22 @@ It is still true that fairness is a geometric property independent of parameteri
 
 Understanding this distinctions is essential when analyzing spline quality or when comparing curves generated under different parameterizations. In spline constructions where the knot vector also influences the basis functions (e.g., B-splines), changing knot values may modify the geometry itself, and therefore also the fairness of the curve.
 
+## Effects of Uneven Knot Spacing
 
+So far, we have analyzed knot spacing under the assumption of a uniform knot vector. In practice, however, non-uniform knot distributions are common.  
+We now consider a spline defined piecewise on knot spans {math}`[u_i,u_{i+1}]` with non-uniform intervals {math}`\Delta_i`.
+
+For any spline that is defined piecewise via a linear parameter transformation on each span, the scaling effect given by {math}`\Delta_i` holds independently of the specific polynomial representation (Bézier, B-spline, etc.), as it follows solely from the linear change of parameter on each span.
+
+So: What Uneven Knots Affect?
+
+Non-uniform knot spacing influences:
+
+- Derivative magnitudes, since global derivatives scale as {math}`\Delta_i`. Smaller spans amplify higher derivatives.
+- Continuity conditions, because global {math}`C^k `continuity requires consistent scaling of adjacent spans.
+- Parameter speed, as the curve is traversed more rapidly on small spans and more slowly on large spans.
+- Curvature plots, since although geometric curvature is invariant under linear reparameterization, its distribution with respect to the global parameter may appear distorted.
+- Numerical conditioning, because higher derivatives enter many numerical operators. Since they scale with {math}`\Delta_i^{-k}`, highly non-uniform knot vectors may degrade conditioning.
 
 
 

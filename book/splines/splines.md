@@ -206,7 +206,12 @@ The {math}`k-th` derivative in global parameter space scales with the
 \sim
 \Delta_i^{-k}.
 ```
-Thus, in general, {math}`k-th` derivatives scale like {math}`\Delta_i^{-k}`.  Further implication of this will be explained in the [Chapter 3.3](#ch-knots-vectors).
+Thus, in general, {math}`k-th` derivatives scale like {math}`\Delta_i^{-k}`.  
+
+Another important fact to notice is that differentiation reduces the polynomial degree by one at each step. That is, a degree-{math}`n` spline segment cannot have nonzero derivatives of order higher than {math}`n`. This statement is local: it holds on each knot span individually. Across knots, derivatives of order {math}`k \le n` may still be discontinuous if the continuity conditions are not satisfied.
+
+
+Further implication of this will be explained in the [Chapter 3.3](#ch-knots-vectors).
 
 ## Conclusion
 
