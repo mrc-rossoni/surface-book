@@ -36,14 +36,6 @@ project:
     children:
       - file: book/b-spline/bspline_curves.md
 
-
-  - title: Engineering Workflows (Using Tools)
-    children:
-      - file: book/partB/07_fitting.md
-      - file: book/partB/07_lab_fitting_geomdl.ipynb
-      - file: book/partB/08_pointclouds.md
-      - file: book/partB/08_lab_pointclouds.ipynb
-      - file: book/partB/10_projects.md
   - file: book/glossary.md
   bibliography:
     - book/references.bib

@@ -12,7 +12,7 @@ Changing the degree of a Bézier curve is crucial in CAD, computer graphics, and
 - **Degree elevation** to increase the degree while preserving the shape.
 - **Degree reduction** to approximate the curve with a lower-degree representation.
 
-## Degree Elevation
+# Degree Elevation
 We start from the Bernstein form:
 
 ```{math}
@@ -381,7 +381,7 @@ chart = alt.vconcat(
 chart
 ```
 
-### Why Degree Elevation?
+## Why Degree Elevation?
 Degree elevation has important applications:
 - When combining or blending curves and surfaces of different degrees, degree elevation allows them to be brought to a common degree, enabling exact algebraic operations such as addition, subtraction, or interpolation.
 - In surface design, several algorithms that generate surfaces from curve inputs require all curves to have the same degree. A notable example is the construction of Coons surfaces implemented as tensor-product Bézier or NURBS patches, where boundary curves must be expressed with a common polynomial degree. Degree elevation allows this requirement to be satisfied without altering the curve geometry.
@@ -389,7 +389,7 @@ Degree elevation has important applications:
 - In robotics and control, trajectories are often represented using Bézier. Degree elevation is used to bring trajectories of different polynomial degrees to a common representation, enabling smooth trajectory blending, time reparameterization, and the enforcement of continuity and dynamic constraints (e.g. velocity or acceleration continuity) without altering the geometric path. See, for example, {cite}`Durakl__2022`.
  - ...
 
-## Degree Reduction
+# Degree Reduction
 Degree elevation can be viewed as a process that introduces redundancy, in the sense that the same curve geometry is represented using more control points, and therefore more parameters, than are strictly necessary. Although the representation becomes redundant, degree elevation enlarges the space of admissible control point configurations that represent the same geometry, which can be advantageous in optimization, approximation, and constraint-based formulations. Despite its advantages, degree elevation also introduces drawbacks. The increased polynomial degree and number of control points lead to higher computational and memory costs and may negatively affect numerical conditioning. Moreover, higher-degree representations tend to reduce local control, making shape manipulation less intuitive and increasing the complexity of subsequent geometric algorithms.
 
 Degree reduction is the inverse process and is of interest for several reasons. It addresses the question of whether a given Bézier curve of degree {math}`n` can be represented by a curve of lower degree, for instance {math}`n-1`. While this is generally not possible without loss of information, degree reduction is valuable in practice for:
@@ -398,7 +398,7 @@ Degree reduction is the inverse process and is of interest for several reasons. 
 - Improved interactive control, as lower-degree curves are often easier to manipulate in CAD/CAM workflows.
 
 In general, exact degree reduction is not possible unless the original curve already lies in a lower-degree polynomial space.
-### Why Degree Reduction Is an Approximation (Intuitive Explanation)
+## Why Degree Reduction Is an Approximation (Intuitive Explanation)
 The Bernstein polynomials of degree {math}`n` form a basis for the vector space of all polynomials of degree at most {math}`n`. Consequently, a Bézier curve of degree {math}`n` represents a generic element of this space. When considering degree reduction to a lower degree {math}`m < n`, the target representation is restricted to a strictly smaller subspace spanned by the Bernstein polynomials of degree {math}`m`.
 
 Since this lower-degree space is a proper subspace of the original one, most degree-{math}`n` polynomials do not belong to it. Exact representation is therefore only possible if the original curve happens to lie entirely within that lower-dimensional space, namely if its highest-degree components vanish. In terms of control points, this corresponds to the vanishing of higher-order forward differences, which is a nongeneric and highly restrictive condition.
