@@ -24,7 +24,7 @@ Nice-to-have prerequisites are basic calculus, programming fundamentals, and bas
 This notebook is inspired by the following books:
 
 - Piegl, Les., & Tiller, Wayne. (1997). The NURBS Book (2nd ed. 1997.). Springer Berlin Heidelberg [BiblioPolimi - Available Online](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1nvvje2/alma9956912908776)
-- Farin, G. E. (2002). Curves and surfaces for CAGD : a practical guide. In Curves and surfaces for CAGD : a practical guide (5. ed). Morgan Kaufmann Publishers - [BiblioPolimi](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1nvvje2/alma99599427208776)
+- Farin, G. E. (2002). Curves and surfaces for CAGD : a practical guide. Morgan Kaufmann Publishers - [BiblioPolimi](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1nvvje2/alma99599427208776)
 - Mortenson, M. E. (2006). Geometric modeling (3. ed). Industrial press. [BiblioPolimi](https://www.bibliosearch.polimi.it/permalink/39PMI_INST/1a3em6c/alma99633148108776)
 
 
