@@ -8,7 +8,6 @@ kernelspec:
 
 ---
 
-# Definitions
 Bézier curves are a foundational building block for surface modeling in engineering CAD systems.
 Although industrial models typically rely on B-splines and NURBS, Bézier curves remain the simplest case
 where the geometry is entirely controlled by a finite set of points and a well-defined basis. They are used for local shape editing (via control points), smooth profile definition (aerodynamics, industrial design), construction of surface patches and as a conceptual entry point to B-splines.
@@ -90,6 +89,7 @@ By using the slider at the bottom of the following figure you can have a visual 
 import numpy as np
 import pandas as pd
 import altair as alt
+from IPython.display import HTML, display
 
 # ------------------------------------------------------------
 # Bézier evaluation (no external helpers)
@@ -288,8 +288,30 @@ chart = (
     + casteljau_points
     + final_point
 ).add_params(u_param).properties(
+    width=620,
     title="De Casteljau’s Algorithm — Step-by-step Geometric Construction"
 )
+
+display(HTML("""
+<style>
+/* Scope layout tweaks to this specific chart title */
+.vega-embed:has(.vega-bind-name):has(canvas[aria-label*="De Casteljau’s Algorithm"]),
+.vega-embed:has(.vega-bind-name):has(svg[aria-label*="De Casteljau’s Algorithm"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vega-embed:has(canvas[aria-label*="De Casteljau’s Algorithm"]) .vega-bindings,
+.vega-embed:has(svg[aria-label*="De Casteljau’s Algorithm"]) .vega-bindings {
+  order: -1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+</style>
+"""))
 
 chart
 ```
@@ -366,10 +388,10 @@ C(t_0) = P_0^{(3)}(t_0) = 0.7P_0^{(2)}(t_0) + 0.3P_1^{(2)}(t_0)
 The computational complexity of de Casteljau’s algorithm can be analyzed as follows. For $N_p$ control points, the algorithm requires computing $N_p -1$ interpolations at each recursion level. Hence, the total number of interpolations performed follows a triangular sum:
 
   $$
-  \sum_{r=1}^{N_p-1}  r\frac{(N_p-1) N_p}{2}
+  \sum_{r=1}^{N_p-1} (N_p - r) = \frac{(N_p-1) N_p}{2}
   $$
 
-Therefore, the **time complexity is $ O(n^2) $**, meaning that as the number of control points increases, the computation time grows quadratically. More precisely, the computational complexity is  **$ O(d n^2) $** where d is the number of dimensions.
+Therefore, the **time complexity is $ O(N_p^2) $**, meaning that as the number of control points increases, the computation time grows quadratically. More precisely, the computational complexity is  **$ O(d N_p^2) $** where d is the number of dimensions.
 
 This quadratic complexity is evident in the generated plot (below), where computation time increases non-linearly as control points increase.
 
@@ -398,7 +420,7 @@ De Casteljau’s algorithm quadratic complexity can become a bottleneck for high
 Check out the python implementation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mrc-rossoni/surface-book/blob/main/code/02_Bezier_DeCasteljau.ipynb)
 :::
 
-## Bézier Curve with Berstein Polynomials
+# Bézier Curve with Berstein Polynomials
 
 De Casteljau’s algorithm provides a geometric and numerically stable method for evaluating Bézier curves, relying exclusively on repeated linear interpolation. Each recursion step forms affine combinations of consecutive points. Therefore, the final point on the curve must be expressible as a weighted sum of the original control points, where the weights depend only on the parameter {math}`t`. As a matter of fact, Bézier approached the curves from a different perspective, highlighting the need for an *explicit* representation of the curve. This motivates an explicit basis-function representation of the curve:
 
@@ -440,6 +462,7 @@ The following interactive chart shows how the Bernstein polynomials looks like b
 import numpy as np
 import altair as alt
 from math import comb
+from IPython.display import HTML, display
 
 # ------------------------------------------------------------
 # Bernstein polynomial
@@ -558,7 +581,27 @@ labels = alt.Chart(marker_data).mark_text(
 )
 
 # Combine
-chart = (basis_lines + markers + labels).add_params(n_param, t_param)
+chart = (basis_lines + markers + labels).add_params(n_param, t_param).properties(width=620)
+
+display(HTML("""
+<style>
+.vega-embed:has(.vega-bind-name):has(canvas[aria-label*="Bernstein Basis Polynomials"]),
+.vega-embed:has(.vega-bind-name):has(svg[aria-label*="Bernstein Basis Polynomials"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vega-embed:has(canvas[aria-label*="Bernstein Basis Polynomials"]) .vega-bindings,
+.vega-embed:has(svg[aria-label*="Bernstein Basis Polynomials"]) .vega-bindings {
+  order: -1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+</style>
+"""))
 
 chart
 
@@ -579,6 +622,7 @@ If there are {math}`n+1` control points, then {math}`C(t)` is a polynomial curve
 import numpy as np
 import altair as alt
 from math import comb
+from IPython.display import HTML, display
 
 # ------------------------------------------------------------
 # Bernstein basis
@@ -745,7 +789,7 @@ selected_point = alt.Chart(selected_point_data).mark_point(
 bezier_plot = (
     (curve_after + curve_before + control_polygon + selected_point)
     .add_params(t_param)
-    .properties(height=380, title="Bézier Curve — before/after styling and point at selected t")
+    .properties(height=380, width=620, title="Bézier Curve — before/after styling and point at selected t")
 )
 
 # ------------------------------------------------------------
@@ -789,13 +833,33 @@ basis_labels = alt.Chart(selected_basis_data).mark_text(
 bernstein_plot = (
     (basis_lines + basis_markers + basis_labels)
     .add_params(t_param)
-    .properties(height=380)
+    .properties(height=380, width=620)
 )
 
 # ------------------------------------------------------------
 # Combine plots vertically
 # ------------------------------------------------------------
 chart = alt.vconcat(bezier_plot, bernstein_plot).resolve_scale(color="independent")
+
+display(HTML("""
+<style>
+.vega-embed:has(.vega-bind-name):has(canvas[aria-label*="Bézier Curve"]),
+.vega-embed:has(.vega-bind-name):has(svg[aria-label*="Bézier Curve"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vega-embed:has(canvas[aria-label*="Bézier Curve"]) .vega-bindings,
+.vega-embed:has(svg[aria-label*="Bézier Curve"]) .vega-bindings {
+  order: -1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+</style>
+"""))
 
 chart
 
@@ -902,7 +966,7 @@ The key properties are:
 6. Invariant under affine parameter transformation: i.e.: not bounded to the interval [0,1].
 
 
-## Bézier Curve in Matrix Form
+# Bézier Curve in Matrix Form
 Using the {ref}`(outer product)<outerProd>` notation, we rewrite the Bézier curve equation as:
 
 $$
@@ -1005,7 +1069,8 @@ u_{m}v_{1} & u_{m}v_{2} & \dots & u_{m}v_{n}
 $$
 :::
 
-### Quadratic Bézier Curve
+(Quadratic-bezier-example-matrix)=
+:::{prf:example .simple .dropdown} Example for a Quadratic Bézier Curve
 
 For a quadratic Bézier curve defined by three control points $\mathbf{P}_0, \mathbf{P}_1, \mathbf{P}_2$, the parametric equation is:
 
@@ -1047,8 +1112,10 @@ t^2
 \mathbf{P}_2
 \end{bmatrix}
 $$
+:::
 
-### Cubic Bézier Curve
+(Cubic-bezier-example-matrix)=
+:::{prf:example .simple .dropdown} Example for a Cubic Bézier Curve
 
 For a cubic Bézier curve defined by four control points $\mathbf{P}_0, \mathbf{P}_1, \mathbf{P}_2, \mathbf{P}_3$, the parametric equation is:
 
@@ -1094,12 +1161,13 @@ t^3
 \mathbf{P}_3
 \end{bmatrix}
 $$
+:::
 
 This matrix representation allows efficient computation of Bézier curves using linear algebra.
 
 
 # Conclusions
-We can evaluate {math}`C(u)` in two main ways: direct Bernstein-basis evaluation and De Casteljau’s algorithm. Direct Bernstein evaluation is straightforward, but it can become numerically unstable for high-degree curves. De Casteljau’s algorithm is based on repeated linear interpolation and is generally more stable. But why stability matters?
+We can evaluate {math}`C(t)` in two main ways: direct Bernstein-basis evaluation and De Casteljau’s algorithm. Direct Bernstein evaluation is straightforward, but it can become numerically unstable for high-degree curves. De Casteljau’s algorithm is based on repeated linear interpolation and is generally more stable. But why stability matters?
 
 In engineering workflows, Bézier curves often appear indirectly, for example within surface patches, during representation-conversion steps, or during fitting procedures. For this reason, De Casteljau’s-like algorithms are usually preferred in practice because they reduce the numerical issues associated with evaluating high-degree polynomials.
 
