@@ -967,107 +967,71 @@ The key properties are:
 
 
 # Bézier Curve in Matrix Form
-Using the {ref}`(outer product)<outerProd>` notation, we rewrite the Bézier curve equation as:
-
-$$
-\mathbf{P}(t) =
-\left( \mathbf{B}(t) \otimes \mathbf{P} \right)
-$$
-
-where:
-- $\mathbf{B}(t)$ is the Bernstein basis vector:
-
-$$
-\mathbf{B}(t) =
+Introducing the Bernstein basis vector
+```{math}
+\mathbf{B}(t)=
 \begin{bmatrix}
-B_{n,0}(t) \\ 
-B_{n,1}(t) \\ 
-\vdots \\ 
-B_{n,n-1}(t)
-\end{bmatrix}
-$$
-
-- $\mathbf{P}$ is the vector of control points:
-
-$$
-\mathbf{P} =
-\begin{bmatrix}
-\mathbf{P}_0 \\ 
-\mathbf{P}_1 \\ 
-\vdots \\ 
-\mathbf{P}_{n-1}
-\end{bmatrix}
-$$
-
-Since the outer product results in a summation of element-wise products, the final Bézier curve equation remains:
-
-$$
-\mathbf{P}(t) =
-\mathbf{B}(t)^\top \mathbf{P}
-$$
-
-Alternatively, using the binomial coefficient matrix:
-
-$$
-\mathbf{P}(t) =
-\begin{bmatrix}
-1 & - (n-1) & \binom{n-1}{2} & \dots & (-1)^{n-1} \\
-0 & 1 & - (n-2) & \dots & (-1)^{n-2} \binom{n-1}{n-1} \\
-0 & 0 & 1 & \dots & (-1)^{n-3} \binom{n-1}{n-2} \\
-\vdots & \vdots & \vdots & \ddots & \vdots \\
-0 & 0 & 0 & \dots & 1
-\end{bmatrix}
-\begin{bmatrix}
-1 \\
-t \\
-t^2 \\
+B_0^n(t) \\
+B_1^n(t) \\
 \vdots \\
-t^{n-1}
-\end{bmatrix}
+B_n^n(t)
+\end{bmatrix},
+```
+and the vector of control points
+```{math}
+\mathbf{P}=
 \begin{bmatrix}
 \mathbf{P}_0 \\
 \mathbf{P}_1 \\
 \vdots \\
-\mathbf{P}_{n-1}
+\mathbf{P}_n
+\end{bmatrix},
+```
+the Bézier curve can be written compactly as
+```{math}
+\mathbf{P}(t)=\mathbf{B}(t)^\top \mathbf{P}.
+```
+
+This expression represents a dot product between the vector of Bernstein basis functions and the vector of control points. By expanding the Bernstein basis in the power basis, let
+```{math}
+\mathbf{T}(t)=
+\begin{bmatrix}
+1 & t & t^2 & \cdots & t^n
+\end{bmatrix},
+```
+and
+```{math}
+\mathbf{M}_B=
+\begin{bmatrix}
+m_{00} & \cdots & m_{0n} \\
+\vdots & \ddots & \vdots \\
+m_{n0} & \cdots & m_{nn}
+\end{bmatrix},
+```
+where {math}`\mathbf{M}_B` denotes the Bernstein-to-power-basis transformation matrix, defined by
+```{math}
+\begin{bmatrix}
+B_0^n(t) & B_1^n(t) & \cdots & B_n^n(t)
 \end{bmatrix}
-$$
+=
+\mathbf{T}(t)\mathbf{M}_B.
+```
 
-This representation generalizes Bézier curves for any number of control points, allowing for computational efficiency using matrix multiplication.
+Each element {math}`m_{ij}` of {math}`\mathbf{M}_B`, with {math}`i,j=0,\dots,n`, is given by
+```{math}
+m_{ij}=
+\begin{cases}
+(-1)^{\,i-j}\binom{n}{i}\binom{i}{j}, & i\ge j, \\[6pt]
+0, & i<j.
+\end{cases}
+```
+Therefore, the Bézier curve can be written as
+```{math}
+\mathbf{P}(t)=\mathbf{T}(t)\mathbf{M}_B\mathbf{P}.
+```
 
-(outerProd)=
-:::{note  .dropdown icon=false open=false} Outer Product
-The outer product, denoted with $\otimes$, is defined as follows. Given two vectors $u = (1 \times m)$ and $v = (1 \times n)$:
+This matrix formulation is particularly useful in computational settings, as it allows Bézier curves of arbitrary degree to be evaluated efficiently through standard matrix operations.
 
-$$
-\mathbf {u} =
-\begin{bmatrix} 
-u_{1} \\ 
-u_{2} \\ 
-\vdots \\ 
-u_{m} 
-\end{bmatrix}, 
-\quad 
-\mathbf {v} =
-\begin{bmatrix} 
-v_{1} \\ 
-v_{2} \\ 
-\vdots \\ 
-v_{n} 
-\end{bmatrix}
-$$
-
-The outer product, $\mathbf {u} \otimes \mathbf {v}$, is a $m \times n$ matrix:
-
-$$
-\mathbf {u} \otimes \mathbf {v} =\mathbf {A} =
-\begin{bmatrix} 
-u_{1}v_{1} & u_{1}v_{2} & \dots & u_{1}v_{n} \\ 
-u_{2}v_{1} & u_{2}v_{2} & \dots & u_{2}v_{n} \\ 
-\vdots & \vdots & \ddots & \vdots \\ 
-u_{m}v_{1} & u_{m}v_{2} & \dots & u_{m}v_{n} 
-\end{bmatrix}
-$$
-:::
 
 (Quadratic-bezier-example-matrix)=
 :::{prf:example .simple .dropdown} Example for a Quadratic Bézier Curve
@@ -1097,14 +1061,12 @@ Alternatively, using a matrix representation:
 $$
 \mathbf{P}(t) =
 \begin{bmatrix}
-1 & -2 & 1 \\
-0 & 2 & -2 \\
-0 & 0 & 1
+1 & t & t^2
 \end{bmatrix}
 \begin{bmatrix}
-1 \\
-t \\
-t^2
+1 & 0 & 0 \\
+-2 & 2 & 0 \\
+1 & -2 & 1
 \end{bmatrix}
 \begin{bmatrix}
 \mathbf{P}_0 \\
@@ -1143,16 +1105,16 @@ Alternatively, using a matrix representation:
 $$
 \mathbf{P}(t) =
 \begin{bmatrix}
-1 & -3 & 3 & -1 \\
-0 & 3 & -6 & 3 \\
-0 & 0 & 3 & -3 \\
-0 & 0 & 0 & 1
+1 &
+t &
+t^2 &
+t^3
 \end{bmatrix}
 \begin{bmatrix}
-1 \\
-t \\
-t^2 \\
-t^3
+1 & 0 & 0 & 0 \\
+-3 & 3 & 0 & 0 \\
+3 & -6 & 3 & 0 \\
+-1 & 3 & -3 & 1
 \end{bmatrix}
 \begin{bmatrix}
 \mathbf{P}_0 \\
@@ -1162,9 +1124,6 @@ t^3
 \end{bmatrix}
 $$
 :::
-
-This matrix representation allows efficient computation of Bézier curves using linear algebra.
-
 
 # Conclusions
 We can evaluate {math}`C(t)` in two main ways: direct Bernstein-basis evaluation and De Casteljau’s algorithm. Direct Bernstein evaluation is straightforward, but it can become numerically unstable for high-degree curves. De Casteljau’s algorithm is based on repeated linear interpolation and is generally more stable. But why stability matters?
