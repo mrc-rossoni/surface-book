@@ -82,7 +82,7 @@ The global spline is obtained by concatenating these segments:
 s(u) = s_i(t), \qquad u \in [u_i, u_{i+1}].
 ```
 The point {math}`s(u_i) = s_i(0) = s_{i-1}(1)` is called a joint (or junction point). The concatenation of all control polygons forms a piecewise Bézier polygon, providing local geometric control of the spline shape.
-{numref}`fig_composite_bezier_knot_span` illustrates both the piecewise cubic Bézier geometry and the corresponding span-local Bernstein basis support in the global parameter domain. The {math}`u` value is the global parameter for the whole spline: its integer part is representing the “curve index”, its fractional part is representing the local {math}`t-value` for each individual curve. Please not that the global parameter {math}`u` belongs to the parameter domain and simply indexes points along the curve, whereas {math}`x(u)` and {math}`y(u)` are spatial coordinates, so their numerical ranges are unrelated. 
+{numref}`fig_composite_bezier_knot_span` illustrates both the piecewise cubic Bézier geometry and the corresponding span-local Bernstein basis support in the global parameter domain. The {math}`u` value is the global parameter for the whole spline: its integer part is representing the “curve index”, its fractional part is representing the local {math}`t-value` for each individual curve. Please note that the global parameter {math}`u` belongs to the parameter domain and simply indexes points along the curve, whereas {math}`x(u)` and {math}`y(u)` are spatial coordinates, so their numerical ranges are unrelated. 
 
 ```{figure}../imgs/composite_bezier_knot_span.png
 :label: fig_composite_bezier_knot_span
@@ -141,6 +141,7 @@ Using Eq. {numref}`dt_du`:
 :label: eq_first_derivative_scaling
 \frac{ds(u)}{du}
 =
+\frac{ds_i(t)}{dt}
 \frac{1}{\Delta_i}
 ```
 Hence, the global derivative differs from the local derivative by a scaling factor
@@ -179,9 +180,9 @@ This scaling has important geometric, numerical, and modeling implications. Firs
 can have large slope, large curvature and increased oscillatory behavior. This is why clustered knots can create regions of high curvature. Changing knot spacing affects curvature distribution even if control points are unchanged. We well dive into the details of this in the [Chapter 3.3](#ch-knots-vectors).
 
 :::{tip} FEM Analogy
-In classical FEM, shape functions are local per element.
+In classical FEM, shape functions are local per element. Lets call {math}`h` the characteristic size of an element in the mesh. 
 The scaling of second derivatives is {math}`h^{-2}` because the transformation from a reference element to a physical element of size {math}`h` involves involves a Jacobian that scales like {math}`h^1`, so its inverse is {math}`h^{-1}`. Through the chain rule, this inverse Jacobian is applied twice when computing second-order spatial derivatives, leading to the {math}`h^{-2}` factor.
-Since second derivatives enter the stiffness matrix, this {math}`h^{-2}` scaling causes stiffness contributions to increase as elements become smaller. As a consequence small elements lead to larger stiffness entries, the system becomes increasingly ill-conditioned and mesh refinement increases the matrix condition number.
+In formulations where second derivatives enter the stiffness operator (bending-dominated structural FEM, e.g. Euler–Bernoulli beam or Kirchhoff–Love plates), this {math}`h^{-2}` scaling causes stiffness contributions to increase as elements become smaller. As a consequence small elements lead to larger stiffness entries, the system becomes increasingly ill-conditioned and mesh refinement increases the matrix condition number.
 
 In spline-based discretizations, although basis functions overlap multiple knot spans, the derivative scaling {math}`\Delta_i^{-2}` is structurally identical to the finite element {math}`h^{-2}` scaling. Each knot span behaves as a parametric element whose size directly controls the magnitude of derivatives and, consequently, the conditioning of stiffness operators.
 :::
