@@ -26,6 +26,7 @@ project:
       - file: book/bezier/bezier_curves.md
       - file: book/bezier/bezier_derivative.md
       - file: book/bezier/degree_change.md 
+      - file: book/bezier/rational_curve.md 
       
   - file: book/splines/index.md 
     children:
