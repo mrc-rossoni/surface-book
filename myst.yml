@@ -34,8 +34,12 @@ project:
       - file: book/splines/continuity.md
       - file: book/splines/EffectofKnotSpacing.md
   - file: book/b-spline/index.md
-    #children:
-      #- file: book/b-spline/bspline_curves.md
+    children:
+      - file: book/b-spline/bspline_introduction.md
+      - file: book/b-spline/bspline_basis.md
+      - file: book/b-spline/bspline_curves.md
+      - file: book/b-spline/bspline_approximation.md
+      
 
   - file: book/glossary.md
   bibliography:
