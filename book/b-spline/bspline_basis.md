@@ -385,15 +385,9 @@ import pandas as pd
 import altair as alt
 from IPython.display import HTML, display
 
-# ------------------------------------------------------------
-# Fixed degree
-# ------------------------------------------------------------
 degree = 3
-max_panels = 4  # fixed 2x2 layout
+max_panels = 4
 
-# ------------------------------------------------------------
-# B-spline basis (Cox-de Boor recursion)
-# ------------------------------------------------------------
 def bspline_basis(i, p, knots, x):
     x = np.asarray(x, dtype=float)
     knots = np.asarray(knots, dtype=float)
@@ -421,20 +415,13 @@ def bspline_basis(i, p, knots, x):
     return left_term + right_term
 
 
-# ------------------------------------------------------------
-# Knot vectors (fixed degree = 3)
-# ------------------------------------------------------------
 knot_presets = {
     "[0, 1, 2, 3, 4]": [0, 1, 2, 3, 4],
     "[0, 1, 2, 2, 3, 4]": [0, 1, 2, 2, 3, 4],
     "[0, 1, 2, 2, 2, 3, 4]": [0, 1, 2, 2, 2, 3, 4],
-    "[0, 1, 2, 2, 2, 2, 3, 4]": [0, 1, 2, 2, 2, 2, 3, 4]
+    "[0, 1, 2, 2, 2, 2, 3, 4]": [0, 1, 2, 2, 2, 2, 3, 4],
 }
 
-# ------------------------------------------------------------
-# Precompute basis-function samples
-# Always allocate 4 panels; missing basis functions are empty panels
-# ------------------------------------------------------------
 rows = []
 meta_rows = []
 
@@ -472,28 +459,24 @@ for knot_label, knots in knot_presets.items():
         "n_basis": int(n_basis),
     })
 
+
 df = pd.DataFrame(rows)
 df_meta = pd.DataFrame(meta_rows)
 
 chart_data = alt.Data(values=df.to_dict(orient="records"))
 meta_data = alt.Data(values=df_meta.to_dict(orient="records"))
 
-# ------------------------------------------------------------
-# Dropdown selector
-# ------------------------------------------------------------
 knot_dropdown = alt.binding_select(
     options=list(knot_presets.keys()),
     name="knot vector: "
 )
 
 knot_param = alt.param(
+    name="selected_knot",
     value="[0, 1, 2, 3, 4]",
     bind=knot_dropdown
 )
 
-# ------------------------------------------------------------
-# Base chart filtered by selected knot vector
-# ------------------------------------------------------------
 base = alt.Chart(chart_data).transform_filter(
     alt.datum.knot_label == knot_param
 )
@@ -502,9 +485,6 @@ meta = alt.Chart(meta_data).transform_filter(
     alt.datum.knot_label == knot_param
 )
 
-# ------------------------------------------------------------
-# Per-panel border/background so empty facets remain visible
-# ------------------------------------------------------------
 panel_bg = base.mark_rect(
     fill="white",
     stroke="#d1d5db"
@@ -515,15 +495,15 @@ panel_bg = base.mark_rect(
     y2=alt.value(180)
 ).properties(
     width=260,
-    height=180
+    height=180,
+    name="panel_bg"
 )
 
-# ------------------------------------------------------------
-# Basis-function plot (only for non-empty panels)
-# ------------------------------------------------------------
 basis_plot = base.transform_filter(
     alt.datum.is_empty == False
-).mark_line(strokeWidth=3).encode(
+).mark_line(
+    strokeWidth=3
+).encode(
     x=alt.X("x:Q", title="t"),
     y=alt.Y("y:Q", title="Basis value", scale=alt.Scale(domain=[0, 1.05])),
     tooltip=[
@@ -533,12 +513,10 @@ basis_plot = base.transform_filter(
     ]
 ).properties(
     width=260,
-    height=180
+    height=180,
+    name="basis_plot"
 )
 
-# ------------------------------------------------------------
-# Empty-panel label
-# ------------------------------------------------------------
 empty_text = base.transform_filter(
     alt.datum.is_empty == True
 ).mark_text(
@@ -552,12 +530,10 @@ empty_text = base.transform_filter(
     text=alt.value("empty")
 ).properties(
     width=260,
-    height=180
+    height=180,
+    name="empty_text"
 )
 
-# ------------------------------------------------------------
-# Combine per-panel layers and facet into fixed 2x2 grid
-# ------------------------------------------------------------
 grid = alt.layer(
     panel_bg,
     basis_plot,
@@ -569,11 +545,10 @@ grid = alt.layer(
         title=None
     ),
     columns=2
+).properties(
+    name="basis_grid"
 )
 
-# ------------------------------------------------------------
-# Dynamic header
-# ------------------------------------------------------------
 header = alt.Chart(
     alt.Data(values=[{"dummy": 1}])
 ).mark_text(
@@ -582,14 +557,15 @@ header = alt.Chart(
     fontSize=13,
     color="#334155"
 ).transform_calculate(
-    label="'B-spline basis functions | degree p = 3 | knots = ' + " + knot_param.name
+    label="'B-spline basis functions | degree p = 3 | knots = ' + selected_knot"
 ).encode(
     text="label:N"
-).properties(width=560, height=28)
+).properties(
+    width=560,
+    height=28,
+    name="header"
+)
 
-# ------------------------------------------------------------
-# Metadata text
-# ------------------------------------------------------------
 meta_text = meta.mark_text(
     align="left",
     baseline="middle",
@@ -599,11 +575,12 @@ meta_text = meta.mark_text(
     label="'number of basis functions = ' + datum.n_basis"
 ).encode(
     text="label:N"
-).properties(width=560, height=20)
+).properties(
+    width=560,
+    height=20,
+    name="meta_text"
+)
 
-# ------------------------------------------------------------
-# Compose chart
-# ------------------------------------------------------------
 chart = alt.vconcat(
     header,
     meta_text,
