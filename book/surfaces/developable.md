@@ -8,3 +8,14 @@ kernelspec:
 
 
 (ch-developable)=
+
+
+# Ruled Surface
+
+# Surface curvature
+
+## Principal curvatures
+
+## Gaussian
+
+## Mean

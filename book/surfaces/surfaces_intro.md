@@ -118,6 +118,12 @@ described by a single surface patch. They are usually assembled from many
 patches, and the quality of the resulting model depends strongly on how these
 patches meet.
 
+# Surface evaluation
+Evaluating a surface at a parameter that is within the surface domain results in a
+point that is on the surface. Keep in mind that the middle of the domain (midu,
+midv) might not necessarily evaluate to the middle point of the 3-D surface. Also,
+evaluating u- and v-values that are outside the surface domain will not give a useful
+result.
 
 # NURBS Surfaces
 
@@ -138,3 +144,42 @@ where:
 - {math}`N_{i,p}(u)` and {math}`M_{j,q}(v)` are B-spline basis functions,
 - {math}`\mathbf{T}_u` and {math}`\mathbf{T}_v` are knot vectors,
 - {math}`(u,v)` belongs to the parametric domain.
+
+
+
+
+## Singularity in NURBS surfaces
+
+## Trimmed NURBS surfaces
+
+
+
+# Solid by Boundary Representaitons
+A polysurface consists of two or more (possibly trimmed) NURBS surfaces joined
+together. Each surface has its own structure, parameterization, and isocurve
+directions that do not have to match. Polysurfaces are represented using the
+boundary representation ( BRep ). The BRep structure describes surfaces, edges, and
+vertices with trimming data and connectivity among different parts. Trimmed surface
+are also represented using BRep data structure.
+
+The BRep is a data structure that describes each face in terms of its underlying
+surface, surrounding 3-D edges, vertices, parameter space 2-D trims, and
+relationship between neighboring faces. BRep objects are also called solids when
+they are closed (watertight).
+
+
+We saw that editing NURBS curves and untrimmed surfaces is intuitive and can be
+done interactively by moving control points. However, editing trimmed surfaces and
+polysurfaces can be challenging. The main challenge is to be able to maintain joined
+edges of different faces within the desired tolerance. Neighboring faces that share
+common edges can be trimmed and do not usually have matching NURBS structure,
+and therefore modifying the object in a way that deforms that common edge might
+result in a gap.
+
+Another challenge is that there is typically less control over the outcome, especially
+when modifying trimmed geometry.
+
+Trimmed surfaces are described in parameter space using the untrimmed underlying
+surface combined with the 2-D trim curves that evaluate to the 3-D edges within the
+3-D surface
+

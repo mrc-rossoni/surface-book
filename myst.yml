@@ -39,9 +39,9 @@ project:
       - file: book/b-spline/bspline_basis.md
       - file: book/b-spline/bspline_curves.md
       - file: book/b-spline/bspline_approximation.md
-  #- file: book/surfaces/index.md
-    #children:
-      #- file: book/surfaces/surfaces_intro.md
+  - file: book/surfaces/index.md
+    children:
+      - file: book/surfaces/surfaces_intro.md
       
 
   - file: book/glossary.md
