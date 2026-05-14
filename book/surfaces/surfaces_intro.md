@@ -27,9 +27,9 @@ A parametric surface is defined as a mapping
 where {math}`\Omega \subset \mathbb{R}^2` is the parameter domain.
 
 Geometrically, the surface is obtained by associating each parameter pair
-{math}`(u,v)` with one point in space.
+{math}`(u,v)` with one point in space. A parametric surface can be understood from three complementary points of view. 
 
-A parametric surface can be understood from three complementary points of view. As a **mapping** 
+As a **mapping** 
 ```{math}
 \mathbf{S}(u,v)
 = \bigl(x(u,v),y(u,v),z(u,v)\bigr),
@@ -62,7 +62,6 @@ bases. The idea is to choose one basis in the {math}`u` direction and another ba
 \mathbf{P}_{i,j}\,N_{i,p}(u)\,M_{j,q}(v).
 ```
 The coefficients {math}`\mathbf{P}_{i,j}` are control points arranged in a control net. This is the surface analogue of the control polygon used for curves.
-
 The tensor-product construction is therefore a direct extension of the basis-function representation introduced for curves:
 ```{math}
 \mathbf{C}(u)=\sum_{i=0}^{n}\mathbf{P}_i N_i(u).
@@ -118,8 +117,7 @@ described by a single surface patch. They are usually assembled from many
 patches, and the quality of the resulting model depends strongly on how these
 patches meet.
 
-# Surface evaluation
-Evaluating a surface at a parameter that is within the surface domain results in a
+**Surface evaluation** mean evaluating a surface at a parameter that is within the surface domain results in a
 point that is on the surface. Keep in mind that the middle of the domain (midu,
 midv) might not necessarily evaluate to the middle point of the 3-D surface. Also,
 evaluating u- and v-values that are outside the surface domain will not give a useful
