@@ -144,40 +144,111 @@ where:
 - {math}`(u,v)` belongs to the parametric domain.
 
 
-
-
-## Singularity in NURBS surfaces
-
 ## Trimmed NURBS surfaces
+A NURBS surface is naturally defined over a rectangular parameter domain. {numref}`UnTrimmed` shows a generic, single-patch, untrimmed surface.
+
+```{figure} ../imgs/UnTrimmed_Hole.png
+:label: UnTrimmed
+:alt: UnTrimmed Surface
+:align: center
+
+Untrimmed NURBS surface. The red curves represent the isoparametric curves on the surface, while the grey dashed polyline indicates the control net used to shape the geometry.
+```
+
+In the untrimmed case, the whole domain is mapped to physical space through the surface function:
+```{math}
+\mathbf{S}(u,v)
+=
+\bigl(x(u,v),y(u,v),z(u,v)\bigr),
+\qquad (u,v)\in\Omega .
+```
+For a tensor-product NURBS surface, the domain {math}`\Omega` is usually a rectangle in the {math}`uv` parameter space. Every point inside this rectangle corresponds to a point on the surface in three-dimensional space. This is the case shown in {numref}`UnTrimmed_domain`, where the entire underlying surface is visible. This relationship is illustrated by comparing the UV domain with the corresponding
+three-dimensional surface. In the parameter space, the valid domain occupies the
+whole rectangular region. Since no inner trimming loop removes any portion of the
+domain, all parameter pairs inside the rectangle are evaluated by the surface
+mapping. As a result, the 3-D representation shows the complete underlying NURBS
+patch, bounded only by its natural outer boundary.
+
+```{figure} 
+:label: UnTrimmed_domain
+(UnTrimmed_domain)=
+![](../imgs/UnTrimmed_Hole_3D_Python.png)
+![](../imgs/UnTrimmed_Hole_uv_domain_Python.png)
 
 
+Untrimmed NURBS surface and corresponding UV parameter domain. The full rectangular parameter domain is valid and maps to the complete visible surface. The outer loop coincides with the boundary of the untrimmed domain, so no internal regions are removed and the surface has no holes or cutouts.
+```
 
-# Solid by Boundary Representaitons
-A polysurface consists of two or more (possibly trimmed) NURBS surfaces joined
-together. Each surface has its own structure, parameterization, and isocurve
-directions that do not have to match. Polysurfaces are represented using the
-boundary representation ( BRep ). The BRep structure describes surfaces, edges, and
-vertices with trimming data and connectivity among different parts. Trimmed surface
-are also represented using BRep data structure.
+In many CAD models, however, the desired face is not the whole rectangular surface patch. Instead, only a portion of the underlying NURBS surface is used. This is the purpose of trimming. A trimmed NURBS surface is obtained by combining an underlying untrimmed NURBS surface with one or more trimming curves defined in the parameter domain.
 
-The BRep is a data structure that describes each face in terms of its underlying
-surface, surrounding 3-D edges, vertices, parameter space 2-D trims, and
-relationship between neighboring faces. BRep objects are also called solids when
-they are closed (watertight).
+The trimming curves do not redefine the mathematical surface itself. The underlying NURBS surface remains unchanged. What changes is the region of the parameter domain that is considered valid. Only the parameter pairs
+{math}`(u,v)` that lie inside the trimming boundary are mapped to visible points of the CAD face.
+Take for example the surface shown in {numref}`Trimmed`. The patch is obtained from the previously shown untrimmed surface ({numref}`UnTrimmed`) by removing an internal region, which produces a hole, and by cutting away part of the outer boundary.
+
+```{figure} ../imgs/Trimmed_Hole.png
+:label: Trimmed
+:alt: Trimmed Surface
+:align: center
+
+Trimmed NURBS surface. The red curves represent the isoparametric curves on the surface, while the grey dashed polyline indicates the control net used to shape the geometry.
+```
+
+In other words, a trimmed surface can be described as:
+
+```{math}
+\mathbf{S}_T(u,v)
+=
+\mathbf{S}(u,v),
+\qquad (u,v)\in\Omega_T \subset \Omega ,
+```
+
+where {math}`\Omega` is the original rectangular parameter domain of the untrimmed surface, and {math}`\Omega_T` is the trimmed domain. The trimmed domain is bounded by one or more closed trimming loops.
+
+The outer trimming loop defines the external boundary of the face. Inner trimming loops define holes or excluded regions. A point of the parameter domain belongs to the trimmed surface if it lies inside the outer loop and outside all inner loops. This means that the same underlying NURBS surface can produce very different visible faces depending on the trimming curves applied to it.
+{numref}`Trimmed` shows an example of a trimmed surface while the corresponding parameter-space representation is shown in {numref}`Trimmed_domain`. The rectangular dashed boundary represents the untrimmed NURBS domain, while the trimming loops define the actual region of the surface that remains visible.
+
+```{figure} 
+:label: Trimmed_domain
+(Trimmed_domain)=
+![](../imgs/Trimmed_Hole_3D_Python.png)
+![](../imgs/Trimmed_Hole_uv_domain_Python.png)
 
 
-We saw that editing NURBS curves and untrimmed surfaces is intuitive and can be
-done interactively by moving control points. However, editing trimmed surfaces and
-polysurfaces can be challenging. The main challenge is to be able to maintain joined
-edges of different faces within the desired tolerance. Neighboring faces that share
-common edges can be trimmed and do not usually have matching NURBS structure,
-and therefore modifying the object in a way that deforms that common edge might
-result in a gap.
+Trimmed NURBS surface and its UV parameter domain. The dashed rectangle indicates the original untrimmed parameter domain, while the blue outer trimming loop and orange inner trimming loop define the actual valid region of the face. Only the green region in parameter space is mapped to the visible 3D surface; the grey region is excluded, producing the hole and the trimmed corner.
+```
 
-Another challenge is that there is typically less control over the outcome, especially
-when modifying trimmed geometry.
+This distinction between the underlying surface and the trimmed face is fundamental in CAD. The NURBS surface provides the smooth mathematical geometry, while the trimming curves define which part of that geometry belongs
+to the model. Therefore, a CAD <ins>face</ins> is not only a surface equation: it is a surface together with boundary information.
 
-Trimmed surfaces are described in parameter space using the untrimmed underlying
-surface combined with the 2-D trim curves that evaluate to the 3-D edges within the
-3-D surface
+Trimming is especially important because many engineering shapes cannot be represented conveniently as a single rectangular surface patch. Holes, cutouts, fillets, intersections, and complex boundaries are usually represented by trimming otherwise regular NURBS surfaces. This allows CAD systems to preserve the advantages of tensor-product NURBS surfaces while still representing complex topologies.
 
+However, trimmed surfaces also introduce additional complexity. The boundary of the face is no longer determined only by the natural limits of the surface parameters. It is determined by trimming curves, which must be evaluated and mapped from parameter space to three-dimensional space. A trimming curve in the {math}`uv` domain corresponds to a three-dimensional edge on the surface:
+
+```{math}
+\mathbf{C}_{3D}(t)
+=
+\mathbf{S}\bigl(u(t),v(t)\bigr).
+```
+
+Thus, the 3-D boundary of the face is obtained by evaluating the surface along the 2-D trimming curves. This is why trimmed surfaces are commonly represented inside a boundary representation, or BRep, structure. The BRep stores the underlying surface, the trimming curves, the corresponding 3-D edges, and the topological relationships between faces, edges, and vertices.
+
+From a modeling point of view, this also explains why editing trimmed surfaces can be more difficult than editing untrimmed ones. Moving the control points of the underlying NURBS surface changes the geometry, but the trimming curves and neighboring faces must still remain consistent. If two adjacent faces share a trimmed edge, modifying one surface may create gaps or overlaps unless the shared boundary is updated within the required tolerance.
+
+# Solid by Boundary Representations
+A boundary representation, or BRep, describes a solid or surface model through the entities that form its boundary. Instead of representing the object as a single global equation, a BRep model stores a collection of connected topological elements: faces, wires, edges, and vertices.
+
+The main idea is to separate **geometry** from **topology**. Geometry describes the shape of each element, for example a NURBS surface, a curve, or a point. Topology describes how these elements are connected to one another.
+
+At the highest level, a BRep solid is bounded by a set of faces. Each face is associated with an underlying surface, usually a parametric surface such as a NURBS surface. However, the face does not necessarily correspond to the whole surface. In the case of a trimmed NURBS surface, the face corresponds only to the portion of the underlying surface that lies inside its trimming boundaries.
+
+A face is bounded by one or more wires. A wire is a closed sequence of connected edges. The outer wire defines the external boundary of the face, while inner wires define holes or internal cut-outs. This is why trimmed NURBS surfaces are naturally represented in a BRep structure: the underlying NURBS surface provides the smooth geometry, while the wires define the valid portion of the surface.
+
+Each wire is composed of edges. An edge represents a boundary curve between two vertices. In a BRep model, an edge usually has two geometric descriptions. First, it has a three-dimensional curve that represents the edge in physical space. Second, when the edge lies on a parametric surface, it also has a two-dimensional
+curve in the surface parameter domain.
+
+The vertices are the zero-dimensional topological entities of the BRep. They mark the start and end points of edges. Geometrically, a vertex stores a point in 3-D space. Topologically, it defines how edges meet.
+
+For a complete solid, several faces are connected through shared edges. Two neighboring faces may have different underlying surfaces, different parameterizations, and different trimming curves, but they can still share the
+same topological edge. This shared edge defines the adjacency between the faces.
+
+This separation between surface geometry and topological connectivity is one of the main strengths of BRep modeling. It allows CAD systems to represent complex objects made of many trimmed surfaces joined together. At the same time, it also introduces modeling challenges. When a surface is modified, the adjacent edges, vertices, and neighboring faces must remain consistent within the required geometric tolerance. Otherwise, gaps, overlaps, or invalid connections may appear in the model.

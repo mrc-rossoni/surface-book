@@ -107,7 +107,7 @@ The curvature tensor (or shape operator) is defined as:
 K=II\cdot I^{-1}
 ```
 The eigenvalues of this tensor correspond to the principal curvatures, {math}`k_1` and {math}`k_2`.
-```
+
 while the eigenvectors define the principal directions. The principal directions identify the orientations along which the surface bends the most and the least.
 
 ## Gaussian and Mean Curvature
